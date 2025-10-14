@@ -1,0 +1,51 @@
+/* ---------- TABLA DE PACIENTES ---------- */
+.table-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: rgba(239, 126, 6, 0.05);
+}
+
+.table-active {
+  background-color: rgba(239, 126, 6, 0.15) !important;
+}
+
+/* ---------- PANEL DE EDICIÓN ---------- */
+.card {
+  border-radius: 1rem !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.2rem rgba(239, 126, 6, 0.25);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-outline-primary:hover {
+  background-color: rgba(239, 126, 6, 0.1);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
+}

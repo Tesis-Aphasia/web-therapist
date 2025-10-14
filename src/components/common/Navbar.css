@@ -1,0 +1,97 @@
+:root {
+  --primary: #ef7e06;
+  --primary-dark: #d86e03;
+  --bg-light: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- NAVBAR BASE ---------- */
+.navbar {
+  background-color: var(--bg-light);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 64px;
+  z-index: 1000;
+}
+
+/* Fondo borroso al hacer scroll */
+.navbar-scrolled {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- LOGO / MARCA ---------- */
+.navbar-brand {
+  color: var(--primary) !important;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: var(--primary-dark) !important;
+}
+
+/* ---------- LINKS ---------- */
+.nav-link {
+  border: none;
+  background: none;
+  color: #333;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  padding-bottom: 0.25rem;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.active-link {
+  color: var(--primary) !important;
+  border-bottom: 2px solid var(--primary);
+}
+
+.inactive-link {
+  color: #555;
+}
+
+.inactive-link:hover {
+  color: var(--primary);
+}
+
+/* ---------- BOTÓN LOGOUT ---------- */
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+  transition: all 0.25s ease;
+  font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.6rem 1rem;
+    height: 58px;
+  }
+
+  .navbar .nav {
+    display: none !important;
+  }
+
+  .navbar .navbar-brand {
+    font-size: 1.25rem;
+  }
+
+  .btn-outline-primary {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
+  }
+}

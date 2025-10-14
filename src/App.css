@@ -1,42 +1,89 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* ---------- LAYOUT GENERAL ---------- */
+.page-container {
+  min-height: 100vh;
+  padding-top: 80px; /* espacio para el navbar fijo */
+  background-color: var(--background-light);
+  background-image: radial-gradient(
+      circle at top right,
+      rgba(239, 126, 6, 0.05),
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(239, 126, 6, 0.08),
+      transparent 70%
+    );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ---------- TITULOS Y HEADERS ---------- */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  color: var(--text-color);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+h2 {
+  border-bottom: 2px solid rgba(239, 126, 6, 0.15);
+  padding-bottom: 0.5rem;
+}
+
+/* ---------- SECCIONES ---------- */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+/* ---------- BOTONES ---------- */
+.btn {
+  font-weight: 600;
+  border-radius: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+/* Botón principal */
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(239, 126, 6, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  box-shadow: 0 6px 15px rgba(239, 126, 6, 0.35);
+}
+
+/* Botón claro */
+.btn-outline-primary {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+/* ---------- TRANSICIONES Y EFECTOS ---------- */
+.transition {
+  transition: all 0.25s ease;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .page-container {
+    padding-top: 70px;
   }
-  to {
-    transform: rotate(360deg);
+
+  h2 {
+    font-size: 1.4rem;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

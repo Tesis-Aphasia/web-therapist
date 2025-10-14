@@ -1,0 +1,73 @@
+/* ---------- ESTILOS BASE ---------- */
+.table th {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--muted-text);
+  letter-spacing: 0.5px;
+}
+
+.table-row:hover {
+  background-color: rgba(239, 126, 6, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+/* ---------- BADGES ---------- */
+.badge.bg-success-subtle {
+  background-color: rgba(40, 167, 69, 0.15) !important;
+  color: #198754 !important;
+  font-weight: 600;
+  border-radius: 0.5rem;
+}
+
+.badge.bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.15) !important;
+  color: #d68b00 !important;
+  font-weight: 600;
+  border-radius: 0.5rem;
+}
+
+/* ---------- BOTONES DE ACCIÓN ---------- */
+.text-primary:hover,
+.text-danger:hover {
+  text-decoration: underline;
+}
+
+/* ---------- TARJETA ---------- */
+.card {
+  border-radius: 1rem !important;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 1050;
+}
+
+.modal-content {
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

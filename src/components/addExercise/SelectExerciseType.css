@@ -1,0 +1,55 @@
+.select-exercise-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.option-card {
+  background-color: #fff;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.option-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px rgba(239, 126, 6, 0.2);
+}
+
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.bg-primary-subtle {
+  background-color: rgba(239, 126, 6, 0.1) !important;
+}
+
+.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+@media (max-width: 768px) {
+  .option-card {
+    padding: 1.5rem;
+  }
+
+  .icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+}

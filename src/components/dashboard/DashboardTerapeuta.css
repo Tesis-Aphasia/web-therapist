@@ -1,0 +1,31 @@
+/* ---------- DASHBOARD BASE ---------- */
+.dashboard-card {
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-icon {
+  width: 80px;
+  height: 80px;
+  opacity: 0.8;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .dashboard-card {
+    text-align: center;
+  }
+
+  .dashboard-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
