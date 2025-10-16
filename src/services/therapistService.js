@@ -68,6 +68,35 @@ export function subscribePendingExercises(callback) {
   return unsubscribe;
 }
 
+export async function subscribePendingVisibleExercises(therapistEmail, callback) {
+  // 1️⃣ Obtener IDs de los pacientes del terapeuta
+  const pacientesRef = collection(db, "pacientes");
+  const pacientesQuery = query(pacientesRef, where("terapeuta", "==", therapistEmail));
+  const pacientesSnap = await getDocs(pacientesQuery);
+  const patientIds = pacientesSnap.docs.map((doc) => doc.id); // o doc.data().email si es necesario
+
+  // 2️⃣ Suscribirse a todos los ejercicios pendientes
+  const ejerciciosRef = collection(db, "ejercicios");
+  const q = query(ejerciciosRef, where("revisado", "==", false));
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    // 3️⃣ Filtrar por visibilidad
+    const visibleCount = snapshot.docs.filter((doc) => {
+      const e = doc.data();
+      const isPublic = e.tipo === "publico";
+      const isPrivateOwn = e.tipo === "privado" && e.creado_por === therapistEmail;
+      const isPrivatePatient = e.tipo === "privado" && patientIds.includes(e.creado_por);
+      return isPublic || isPrivateOwn || isPrivatePatient;
+    }).length;
+
+    // 4️⃣ Llamar callback con la cantidad
+    callback(visibleCount);
+  });
+
+  return unsubscribe;
+}
+
+
 //suscribe al conteo de pacientes asignados, viene del atributo de array de pacientes en la coleccion terapeutas
 export function subscribeAssignedPatients(therapistEmail, callback) {
   const ref = doc(db, "terapeutas", therapistEmail);

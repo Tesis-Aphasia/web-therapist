@@ -1,51 +1,197 @@
-/* ---------- TABLA DE PACIENTES ---------- */
-.table-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+:root {
+  --primary: #ef7e06;
+  --primary-dark: #d86e03;
+  --text: #222;
+  --muted: #666;
+  --bg-light: #fff;
+  --table-border: #eee;
 }
 
-.table-row:hover {
-  background-color: rgba(239, 126, 6, 0.05);
+/* === LAYOUT === */
+.patients-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  margin-top: 80px;
+  padding: 3rem 1.5rem;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-.table-active {
-  background-color: rgba(239, 126, 6, 0.15) !important;
+/* === HEADER === */
+.patients-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.8rem;
+  gap: 1rem;
 }
 
-/* ---------- PANEL DE EDICIÓN ---------- */
-.card {
-  border-radius: 1rem !important;
-  box-shadow: var(--shadow-sm);
-}
-
-.form-control:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 0.2rem rgba(239, 126, 6, 0.25);
-}
-
-.btn-primary {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-dark);
-  border-color: var(--primary-dark);
-}
-
-.btn-outline-primary:hover {
-  background-color: rgba(239, 126, 6, 0.1);
-  border-color: var(--primary);
+.patients-header h2 {
+  font-weight: 700;
   color: var(--primary-dark);
 }
 
-/* ---------- RESPONSIVE ---------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.actions input {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  width: 240px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.actions input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 126, 6, 0.15);
+}
+
+.actions button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background: var(--primary-dark);
+}
+
+/* === TABLA === */
+.table-wrapper {
+  border: 1px solid var(--table-border);
+  border-radius: 0.8rem;
+  overflow-x: auto;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+}
+
+.patients-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-light);
+  font-size: 0.95rem;
+}
+
+.patients-table thead {
+  background: #fff8f0;
+  border-bottom: 2px solid var(--primary);
+}
+
+.patients-table th {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.patients-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #f3f3f3;
+  color: var(--text);
+}
+
+/* .patients-table tr:hover {
+  background: rgba(239, 126, 6, 0.05);
+} */
+
+/* === BADGE === */
+.badge-count {
+  display: inline-block;
+  background: rgba(239, 126, 6, 0.1);
+  color: var(--primary-dark);
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+}
+
+/* === BOTONES DE ACCIÓN === */
+.btn-outline {
+  border: 1px solid var(--primary);
+  background: transparent;
+  color: var(--primary-dark);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(239, 126, 6, 0.1);
+}
+
+/* === PAGINACIÓN === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  font-size: 0.95rem;
+}
+
+.pagination button {
+  background: #fff;
+  border: 1px solid var(--primary);
+  color: var(--primary-dark);
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.pagination button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* === VACÍO === */
+.no-data {
+  text-align: center;
+  color: var(--muted);
+  padding: 1.2rem 0;
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  table {
-    font-size: 0.9rem;
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
   }
 
-  .btn {
-    font-size: 0.85rem;
+  .actions input {
+    width: 100%;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+
+  .patients-table th,
+  .patients-table td {
+    padding: 0.7rem;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

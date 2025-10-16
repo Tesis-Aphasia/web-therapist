@@ -1,55 +1,127 @@
-.select-exercise-container {
+:root {
+  --primary: #ef7e06;
+  --primary-dark: #d86e03;
+  --success: #198754;
+  --bg: #fff;
+  --text: #222;
+  --muted: #666;
+}
+
+/* === LAYOUT GENERAL === */
+.select-exercise-page {
+  min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  background: var(--bg);
+  padding: 3rem 1rem;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-.option-card {
-  background-color: #fff;
-  transition: all 0.25s ease;
-  cursor: pointer;
+.page-title {
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--primary-dark);
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+/* === GRID === */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 800px;
+  justify-items: center;
+}
+
+/* === TARJETAS === */
+.exercise-option {
+  background: #fff;
+  border-radius: 1rem;
   border: 2px solid transparent;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 10%;
 }
 
-.option-card:hover {
-  transform: translateY(-5px);
+.exercise-option:hover {
+  transform: translateY(-6px);
   border-color: var(--primary);
-  box-shadow: 0 8px 20px rgba(239, 126, 6, 0.2);
+  box-shadow: 0 10px 25px rgba(239, 126, 6, 0.25);
 }
 
-.icon-wrapper {
-  width: 80px;
-  height: 80px;
+/* === ICONOS === */
+.icon-circle {
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  margin: 0 auto 1rem;
+  font-size: 2.2rem;
+  transition: all 0.3s ease;
 }
 
-.bg-primary-subtle {
-  background-color: rgba(239, 126, 6, 0.1) !important;
+.icon-circle.ia {
+  background-color: rgba(239, 126, 6, 0.1);
+  color: var(--primary-dark);
 }
 
-.bg-success-subtle {
-  background-color: rgba(25, 135, 84, 0.1) !important;
+.icon-circle.manual {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: var(--success);
 }
 
-.text-primary {
-  color: var(--primary) !important;
+/* === TEXTO === */
+.exercise-option h5 {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.4rem;
 }
 
-.text-success {
-  color: #198754 !important;
+.exercise-option p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 auto;
+  max-width: 260px;
 }
 
+/* === ESTADO DESHABILITADO === */
+.exercise-option.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: #eee;
+  box-shadow: none;
+  transition: none;
+}
+
+.exercise-option.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .option-card {
-    padding: 1.5rem;
+  .page-title {
+    font-size: 1.3rem;
   }
 
-  .icon-wrapper {
-    width: 60px;
-    height: 60px;
+  .icon-circle {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+  }
+
+  .exercise-option {
+    padding: 1.5rem 1.2rem;
   }
 }

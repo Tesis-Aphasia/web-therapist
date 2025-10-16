@@ -1,3 +1,4 @@
+// EjerciciosTerapeuta.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../common/Navbar";
@@ -5,8 +6,11 @@ import {
   getVisibleExercises,
   getExerciseDetails,
 } from "../../services/exercisesService";
+import VNESTTable from "./VNESTTable";
+import SRETable from "./SRTable";
 import ExerciseEditor from "../editExercises/VNESTEditor";
 import SREditor from "../editExercises/SREditor";
+import VNESTExerciseModal from "./VNESTExerciseModal";
 import "./EjerciciosTerapeuta.css";
 
 const EjerciciosTerapeuta = () => {
@@ -14,20 +18,52 @@ const EjerciciosTerapeuta = () => {
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [showVnestEditor, setShowVnestEditor] = useState(false);
   const [showSREditor, setShowSREditor] = useState(false);
+  const [showVnestViewer, setShowVnestViewer] = useState(false);
+  const [activeTerapia, setActiveTerapia] = useState("VNEST");
 
   const therapistEmail = localStorage.getItem("terapeutaEmail");
-
-  console.log("Therapist Email:", therapistEmail);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!therapistEmail) return;
 
     let unsubscribeFn = null;
 
-    getVisibleExercises(therapistEmail, setExercises).then((fn) => {
-      // fn será la función de unsubscribe que devuelve onSnapshot
-      unsubscribeFn = fn;
-    });
+    (async () => {
+      unsubscribeFn = await getVisibleExercises(
+        therapistEmail,
+        async (visibleExercises) => {
+          const detailed = await Promise.all(
+            visibleExercises.map(async (e) => {
+              try {
+                const extra = await getExerciseDetails(e.id, e.terapia);
+                if (e.terapia === "VNEST") {
+                  return {
+                    ...e,
+                    contexto: extra.contexto,
+                    verbo: extra.verbo,
+                    nivel: extra.nivel,
+                  };
+                } else if (e.terapia === "SR") {
+                  return {
+                    ...e,
+                    pregunta: extra.pregunta,
+                    rta_correcta: extra.rta_correcta,
+                  };
+                }
+                return { ...e, ...extra };
+              } catch (err) {
+                console.error("❌ Error cargando detalles:", e.id, err);
+                return e;
+              }
+            })
+          );
+
+          setExercises(detailed);
+          console.log("📋 Ejercicios visibles actualizados:", detailed);
+        }
+      );
+    })();
 
     return () => {
       if (unsubscribeFn) unsubscribeFn();
@@ -45,24 +81,30 @@ const EjerciciosTerapeuta = () => {
     }
   };
 
+  const handleViewExercise = async (exercise) => {
+    try {
+      const extra = await getExerciseDetails(exercise.id, exercise.terapia);
+      setSelectedExercise({ ...exercise, ...extra });
+      setShowVnestViewer(true);
+    } catch (err) {
+      console.error("❌ Error cargando detalles del ejercicio:", err);
+    }
+  };
+
   const handleCloseEditor = (updated) => {
     setShowVnestEditor(false);
     setShowSREditor(false);
     setSelectedExercise(null);
     if (updated) console.log("✅ Ejercicio actualizado.");
   };
-  const navigate = useNavigate();
 
-  const handleGenerateNew = () => {
-    navigate("/ejercicios/nuevo");
-  };
+  const handleGenerateNew = () => navigate("/ejercicios/nuevo");
 
   return (
     <div className="page-container">
       <Navbar active="ejercicios" />
-
       <main className="container py-5 mt-5">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <h2 className="fw-bold text-dark mb-0">Gestión de Ejercicios</h2>
           <button
             onClick={handleGenerateNew}
@@ -72,65 +114,29 @@ const EjerciciosTerapeuta = () => {
           </button>
         </div>
 
-        <div className="card shadow-sm border-0 rounded-4">
-          <div className="table-responsive">
-            <table className="table align-middle mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>ID</th>
-                  <th>Terapia</th>
-                  <th>Visibilidad</th>
-                  <th>Estado</th>
-                  <th>Autor</th>
-
-                  <th className="text-end">Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {exercises.map((e) => (
-                  <tr key={e.id} className="table-row">
-                    <td>{e.id}</td>
-                    <td>{e.terapia}</td>
-                    <td>{e.tipo}</td>
-
-                    <td>
-                      {e.revisado ? (
-                        <span className="badge bg-success-subtle text-success px-3 py-2">
-                          Aprobado
-                        </span>
-                      ) : (
-                        <span className="badge bg-warning-subtle text-warning px-3 py-2">
-                          Pendiente
-                        </span>
-                      )}
-                    </td>
-                    <td>{e.creado_por || "—"}</td>
-                    <td className="text-end">
-                      <div className="d-flex justify-content-end gap-3">
-                        <button
-                          className="text-primary fw-semibold border-0 bg-transparent"
-                          onClick={() => handleEdit(e)}
-                        >
-                          Revisar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {exercises.length === 0 && (
-                  <tr>
-                    <td colSpan="5" className="text-center text-muted py-4">
-                      No hay ejercicios registrados.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+        {/* --- FILTRO DE TERAPIAS --- */}
+        <div className="terapia-tabs mb-4">
+          {["VNEST", "SR"].map((terapia) => (
+            <button
+              key={terapia}
+              className={`tab-btn ${
+                activeTerapia === terapia ? "active-tab" : ""
+              }`}
+              onClick={() => setActiveTerapia(terapia)}
+            >
+              {terapia}
+            </button>
+          ))}
         </div>
+
+        {/* --- TABLA SEGÚN TERAPIA --- */}
+        {activeTerapia === "VNEST" ? (
+          <VNESTTable exercises={exercises} onEdit={handleEdit} onView={handleViewExercise} />
+        ) : (
+          <SRETable exercises={exercises} onEdit={handleEdit} onView={handleViewExercise} />
+        )}
       </main>
 
-      {/* === EDITORES === */}
       {showVnestEditor && selectedExercise && (
         <ExerciseEditor
           open={showVnestEditor}
@@ -143,6 +149,16 @@ const EjerciciosTerapeuta = () => {
           open={showSREditor}
           onClose={handleCloseEditor}
           exercise={selectedExercise}
+        />
+      )}
+
+      {showVnestViewer && selectedExercise && (
+        <VNESTExerciseModal
+          exercise={selectedExercise}
+          onClose={() => {
+            setShowVnestViewer(false);
+            setSelectedExercise(null);
+          }}
         />
       )}
     </div>

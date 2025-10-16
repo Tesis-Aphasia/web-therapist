@@ -4,7 +4,7 @@ import Navbar from "../common/Navbar";
 import {
   getTherapistData,
   subscribeAssignedPatients,
-  subscribePendingExercises,
+  subscribePendingVisibleExercises,
 } from "../../services/therapistService";
 import "./DashboardTerapeuta.css";
 
@@ -21,12 +21,15 @@ const DashboardTerapeuta = () => {
       return;
     }
 
-    // 🔹 Cargar datos básicos del terapeuta
     getTherapistData(email).then((data) => setTerapeuta(data));
 
-    // 🔹 Suscribirse a pacientes y ejercicios
+    let unsubEjercicios;
     const unsubPacientes = subscribeAssignedPatients(email, setNumPacientes);
-    const unsubEjercicios = subscribePendingExercises(setNumPendientes);
+
+    async function subscribeEjercicios() {
+      unsubEjercicios = await subscribePendingVisibleExercises(email, setNumPendientes);
+    }
+    subscribeEjercicios();
 
     return () => {
       unsubPacientes && unsubPacientes();
@@ -36,24 +39,27 @@ const DashboardTerapeuta = () => {
 
   return (
     <div className="page-container">
-      {/* --- NAVBAR COMÚN --- */}
       <Navbar active="dashboard" />
 
-      {/* --- CONTENIDO PRINCIPAL --- */}
-      <main className="container py-5 mt-5">
-        <h2 className="fw-bold mb-5 text-dark">Dashboard</h2>
+      <main className="dashboard-page">
+        <header className="dashboard-header">
+          <div>
+            <h2>Bienvenido{terapeuta?.nombre ? `, ${terapeuta.nombre}` : ""}</h2>
+            <p className="subtitle">Aquí puedes ver el estado general de tus pacientes y ejercicios.</p>
+          </div>
+        </header>
 
-        <div className="row g-4 justify-content-center">
-          {/* --- CARD PACIENTES --- */}
-          <div className="col-md-5">
-            <div className="card dashboard-card p-4 shadow-sm border-0">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <p className="fw-semibold text-secondary mb-1">
-                    Pacientes asociados
-                  </p>
-                  <h1 className="fw-bold text-primary">{numPacientes}</h1>
-                </div>
+        <section className="dashboard-cards">
+          {/* --- PACIENTES --- */}
+          <div className="dashboard-card hoverable">
+            <div className="card-content">
+              <div>
+                <p className="label">Pacientes asociados</p>
+                <h1 className="clickable-number" onClick={() => navigate("/pacientes")}>
+                  {numPacientes}
+                </h1>
+              </div>
+              <div className="icon-wrapper orange">
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/387/387561.png"
                   alt="Pacientes"
@@ -63,16 +69,16 @@ const DashboardTerapeuta = () => {
             </div>
           </div>
 
-          {/* --- CARD EJERCICIOS --- */}
-          <div className="col-md-5">
-            <div className="card dashboard-card p-4 shadow-sm border-0">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <p className="fw-semibold text-secondary mb-1">
-                    Ejercicios por revisar
-                  </p>
-                  <h1 className="fw-bold text-primary">{numPendientes}</h1>
-                </div>
+          {/* --- EJERCICIOS --- */}
+          <div className="dashboard-card hoverable">
+            <div className="card-content">
+              <div>
+                <p className="label">Ejercicios por revisar</p>
+                <h1 className="clickable-number" onClick={() => navigate("/ejercicios")}>
+                  {numPendientes}
+                </h1>
+              </div>
+              <div className="icon-wrapper blue">
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/2972/2972338.png"
                   alt="Ejercicios"
@@ -81,7 +87,7 @@ const DashboardTerapeuta = () => {
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );

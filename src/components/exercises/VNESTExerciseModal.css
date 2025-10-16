@@ -1,0 +1,172 @@
+:root {
+  --primary: #ef7e06;
+  --primary-dark: #c96a05;
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --card-bg: #fef9f4;
+  --success: #28a745;
+  --error: #dc3545;
+}
+
+/* === Fondo general del modal === */
+.vnest-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+/* === Contenedor del modal === */
+.vnest-modal {
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 750px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  padding: 1.5rem 2rem;
+  animation: slideIn 0.25s ease;
+  font-family: "Segoe UI", Arial, sans-serif;
+  position: relative;
+}
+
+/* === Header === */
+.vnest-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid var(--primary);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.vnest-modal-header h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: var(--primary-dark);
+}
+
+/* === Texto general === */
+.vnest-info p,
+.vnest-meta p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.vnest-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.vnest-description {
+  background: #fff5eb;
+  border-left: 4px solid var(--primary);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* === Títulos === */
+.vnest-section h5 {
+  color: var(--primary-dark);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+/* === Oraciones === */
+.vnest-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sentence {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff8f0;
+  border: 1px solid #f1e0c5;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.correct {
+  color: var(--success);
+}
+
+.incorrect {
+  color: var(--error);
+}
+
+/* === Pares === */
+.pair-card {
+  background: #fff8f0;
+  border-left: 4px solid var(--primary);
+  border-radius: 0.7rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.pair-card p {
+  margin: 0.3rem 0;
+  color: var(--text);
+}
+
+.expansions {
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--primary);
+}
+
+/* === Animaciones === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

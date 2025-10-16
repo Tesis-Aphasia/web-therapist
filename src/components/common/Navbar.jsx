@@ -7,7 +7,6 @@ const Navbar = ({ active }) => {
   const email = localStorage.getItem("terapeutaEmail");
   const [scrolled, setScrolled] = useState(false);
 
-  // Efecto para aplicar fondo blur al hacer scroll
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
@@ -23,35 +22,28 @@ const Navbar = ({ active }) => {
     { key: "dashboard", label: "Dashboard" },
     { key: "pacientes", label: "Pacientes" },
     { key: "ejercicios", label: "Ejercicios" },
-    { key: "ajustes", label: "Ajustes" },
   ];
 
   return (
-    <nav
-      className={`navbar navbar-expand-lg fixed-top ${
-        scrolled ? "navbar-scrolled" : ""
-      }`}
-    >
+    <nav className={`navbar fixed-top ${scrolled ? "navbar-scrolled" : ""}`}>
       <div className="container-fluid d-flex justify-content-between align-items-center px-4">
-        {/* === LOGO / TÍTULO === */}
+        {/* LOGO */}
         <div
-          className="navbar-brand text-primary fw-bold fs-4"
+          className="navbar-brand"
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/dashboard")}
         >
           Rehabilita
         </div>
 
-        {/* === MENÚ DE NAVEGACIÓN === */}
+        {/* MENÚ */}
         <ul className="nav d-none d-md-flex gap-4">
           {tabs.map((tab) => (
             <li className="nav-item" key={tab.key}>
               <button
                 onClick={() => navigate(`/${tab.key}`)}
-                className={`nav-link fw-semibold ${
-                  active === tab.key
-                    ? "active-link"
-                    : "inactive-link"
+                className={`nav-link ${
+                  active === tab.key ? "active-link" : "inactive-link"
                 }`}
               >
                 {tab.label}
@@ -60,17 +52,13 @@ const Navbar = ({ active }) => {
           ))}
         </ul>
 
-        {/* === PERFIL Y LOGOUT === */}
+        {/* PERFIL Y LOGOUT */}
         <div className="d-flex align-items-center gap-3">
           <span className="fw-semibold text-secondary small d-none d-md-inline">
             {email}
           </span>
-          <button
-            onClick={handleLogout}
-            className="btn btn-sm btn-outline-primary fw-semibold"
-          >
-            <i className="bi bi-box-arrow-right me-1"></i>
-            Logout
+          <button onClick={handleLogout} className="btn btn-logout">
+            <i className="bi bi-box-arrow-right me-1"></i> Logout
           </button>
         </div>
       </div>

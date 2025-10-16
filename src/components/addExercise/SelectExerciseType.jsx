@@ -10,43 +10,34 @@ const SelectExerciseType = () => {
     <div className="page-container">
       <Navbar active="ejercicios" />
 
-      <main className="container py-5 mt-5 select-exercise-container">
-        <h2 className="fw-bold text-dark mb-4 text-center">
+      <main className="select-exercise-page">
+        <h2 className="page-title">
           ¿Cómo deseas crear el nuevo ejercicio?
         </h2>
 
-        <div className="row justify-content-center g-4">
-          {/* Opción IA */}
-          <div className="col-md-5">
-            <div
-              className="option-card shadow-sm border-0 rounded-4 p-4 h-100 text-center"
-              onClick={() => navigate("/ejercicios/nuevo/ia")}
-            >
-              <div className="icon-wrapper bg-primary-subtle text-primary mx-auto mb-3">
-                <i className="bi bi-stars fs-2"></i>
-              </div>
-              <h5 className="fw-bold mb-2">Generar con IA</h5>
-              <p className="text-muted small">
-                Crea automáticamente un ejercicio basado en un verbo, contexto o nivel.
-              </p>
+        <div className="options-grid">
+          {/* === Opción IA === */}
+          <div
+            className="exercise-option option-ia"
+            onClick={() => navigate("/ejercicios/nuevo/ia")}
+          >
+            <div className="icon-circle ia">
+              <i className="bi bi-stars"></i>
             </div>
+            <h5>Generar con IA</h5>
+            <p>
+              Crea automáticamente un ejercicio basado en un verbo, contexto o nivel.
+            </p>
           </div>
 
-          {/* Opción Manual */}
-          {/* <div className="col-md-5">
-            <div
-              className="option-card shadow-sm border-0 rounded-4 p-4 h-100 text-center"
-              onClick={() => navigate("/ejercicios/nuevo/manual")}
-            >
-              <div className="icon-wrapper bg-success-subtle text-success mx-auto mb-3">
-                <i className="bi bi-pencil-square fs-2"></i>
-              </div>
-              <h5 className="fw-bold mb-2">Crear manualmente</h5>
-              <p className="text-muted small">
-                Diseña paso a paso un ejercicio personalizado para tus pacientes.
-              </p>
+          {/* === Opción Manual === */}
+          <div className="exercise-option option-manual disabled">
+            <div className="icon-circle manual">
+              <i className="bi bi-pencil-square"></i>
             </div>
-          </div> */}
+            <h5>Crear manualmente</h5>
+            <p>Próximamente...</p>
+          </div>
         </div>
       </main>
     </div>
