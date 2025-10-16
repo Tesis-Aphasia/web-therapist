@@ -17,14 +17,11 @@ const TerapeutaLogin = () => {
 
     try {
       const isValid = await loginTherapist(email, password);
-
       if (!isValid) {
         setError("Credenciales incorrectas. Verifica tu email o contraseña.");
         setLoading(false);
         return;
       }
-
-      // ✅ Guardar sesión
       localStorage.setItem("terapeutaEmail", email);
       navigate("/dashboard");
     } catch (err) {
@@ -36,15 +33,15 @@ const TerapeutaLogin = () => {
   };
 
   return (
-    <div className="login-container brain-bg">
-      <div className="login-card shadow">
+    <div className="login-container">
+      <div className="gradient-bg" />
+      <div className="login-card">
         <div className="text-center mb-4">
           <h1 className="fw-bold text-dark fs-3 mb-1">Dashboard Terapeuta</h1>
-          <p className="text-muted small">Bienvenido a Rehabilita</p>
+          <p className="text-muted small">Bienvenido a <strong>Rehabilita</strong></p>
         </div>
 
         <form onSubmit={handleLogin}>
-          {/* Email */}
           <div className="mb-3">
             <label htmlFor="email" className="form-label fw-semibold small">
               Email
@@ -60,7 +57,6 @@ const TerapeutaLogin = () => {
             />
           </div>
 
-          {/* Contraseña */}
           <div className="mb-3">
             <label htmlFor="password" className="form-label fw-semibold small">
               Contraseña
@@ -76,35 +72,20 @@ const TerapeutaLogin = () => {
             />
           </div>
 
-          {/* Error */}
-          {error && (
-            <div
-              className="alert alert-danger py-2 small text-center"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
+          {error && <div className="alert alert-error">{error}</div>}
 
           <div className="d-flex justify-content-end mb-3">
-            <a href="#" className="text-decoration-none small text-primary">
-              ¿Olvidaste tu contraseña?
-            </a>
+            <a href="#" className="forgot-link small">¿Olvidaste tu contraseña?</a>
           </div>
 
-          {/* Botón login */}
           <button
             type="submit"
-            className="btn btn-primary w-100 fw-bold rounded-3"
+            className="btn-login"
             disabled={loading}
           >
             {loading ? (
               <>
-                <span
-                  className="spinner-border spinner-border-sm me-2"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
+                <span className="spinner-border spinner-border-sm me-2"></span>
                 Iniciando sesión...
               </>
             ) : (

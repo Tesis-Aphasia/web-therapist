@@ -1,124 +1,154 @@
 :root {
   --primary: #ef7e06;
   --primary-dark: #c96a05;
-  --bg-light: #ffffff;
-  --border-color: rgba(0, 0, 0, 0.06);
-  --text: #1f2937;
-  --muted: #6b7280;
+  --gradient-accent: linear-gradient(90deg, #ef7e06, #f8b86b);
+  --text-dark: #2c2c2c;
+  --text-muted: #707070;
+  --bg-blur: rgba(255, 255, 255, 0.85);
 }
 
-/* ---------- NAVBAR GENERAL ---------- */
-.navbar {
-  background-color: var(--bg-light);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-  height: 66px;
+/* === NAVBAR BASE === */
+.navbar-modern {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 68px;
+  background: var(--bg-blur);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.35s ease;
   z-index: 1000;
 }
 
-.navbar-scrolled {
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+.navbar-modern.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 2px solid rgba(239, 126, 6, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* ---------- LOGO ---------- */
-.navbar-brand {
-  color: var(--primary);
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-weight: 700;
+/* === CONTENIDO === */
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* === LOGO === */
+.navbar-logo {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-weight: 800;
   font-size: 1.6rem;
-  letter-spacing: 0.5px;
-  transition: color 0.25s ease;
+  letter-spacing: -0.3px;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.navbar-brand:hover {
+.navbar-logo:hover {
   color: var(--primary-dark);
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
-/* ---------- LINKS DE NAVEGACIÓN ---------- */
-.nav-link {
-  position: relative;
-  border: none;
+.logo-accent {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* === LINKS === */
+.navbar-links li {
+  list-style: none;
+}
+
+.nav-btn {
   background: none;
+  border: none;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--muted);
-  padding: 0.25rem 0;
+  color: var(--text-muted);
+  position: relative;
   transition: all 0.25s ease;
+  padding: 0.3rem 0;
+  cursor: pointer;
 }
 
-.nav-link:hover {
+.nav-btn:hover {
   color: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
-.active-link {
-  color: var(--primary-dark) !important;
+/* === ACTIVO === */
+.nav-btn.active {
+  color: var(--primary-dark);
+  font-weight: 700;
 }
 
-.active-link::after {
+.nav-btn.active::after {
   content: "";
   position: absolute;
-  bottom: -4px;
   left: 0;
   right: 0;
-  height: 2.5px;
-  background-color: var(--primary);
-  border-radius: 1rem;
-  transition: width 0.3s ease;
+  bottom: -6px;
+  height: 3px;
+  background: var(--gradient-accent);
+  border-radius: 10px;
+  animation: underlineGrow 0.3s ease-out;
 }
 
-/* ---------- EMAIL ---------- */
-.text-secondary {
-  color: var(--muted) !important;
-  font-size: 0.85rem;
+/* === ANIMACIÓN SUBRAYADO === */
+@keyframes underlineGrow {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+/* === EMAIL === */
+.user-email {
   background: #f9fafb;
-  padding: 0.3rem 0.7rem;
-  border-radius: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 0.6rem;
   border: 1px solid #e5e7eb;
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
-/* ---------- BOTÓN LOGOUT ---------- */
+/* === BOTÓN LOGOUT === */
 .btn-logout {
-  background-color: transparent;
-  border: 2px solid var(--primary);
-  color: var(--primary);
+  background: var(--gradient-accent);
+  color: #fff;
+  border: none;
   font-weight: 600;
-  padding: 0.4rem 0.85rem;
+  padding: 0.45rem 1rem;
   border-radius: 0.6rem;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 0.3rem;
 }
 
 .btn-logout:hover {
-  background-color: var(--primary);
-  color: #fff;
-  border-color: var(--primary-dark);
+  filter: brightness(1.1);
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(239, 126, 6, 0.25);
+  box-shadow: 0 4px 12px rgba(239, 126, 6, 0.25);
 }
 
-/* ---------- RESPONSIVE ---------- */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .navbar {
+  .navbar-modern {
     height: 58px;
-    padding: 0.6rem 1rem;
   }
 
-  .navbar .nav {
+  .navbar-logo {
+    font-size: 1.35rem;
+  }
+
+  .navbar-links {
     display: none !important;
-  }
-
-  .navbar-brand {
-    font-size: 1.3rem;
   }
 
   .btn-logout {
     font-size: 0.85rem;
-    padding: 0.3rem 0.6rem;
+    padding: 0.3rem 0.7rem;
   }
 }

@@ -3,15 +3,14 @@ import { useParams } from "react-router-dom";
 import Navbar from "../common/Navbar";
 import {
   getAssignedExercises,
-  assignExerciseToPatient,
-  getPatientById,
 } from "../../services/patientService";
 import {
-  personalizeExercise,
   getExerciseDetails,
   getExerciseById,
 } from "../../services/exercisesService";
 import VNESTExerciseModal from "../exercises/VNESTExerciseModal";
+import PacientePersonalizar from "./PacientePersonalizar";
+import PatientAssignExercise from "./PatientAssignExercise";
 import "./PacienteDetail.css";
 
 const PacienteDetail = () => {
@@ -22,9 +21,6 @@ const PacienteDetail = () => {
   const [showVnestViewer, setShowVnestViewer] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
-  const [exerciseId, setExerciseId] = useState("");
-  const [baseExerciseId, setBaseExerciseId] = useState("");
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   // 📄 Paginación
@@ -85,67 +81,6 @@ const PacienteDetail = () => {
     loadDetails();
   }, [exercises]);
 
-  // === Asignar nuevo ejercicio ===
-  const handleAssignExercise = async () => {
-    if (!exerciseId.trim()) {
-      setMessage("⚠️ Ingresa un ID de ejercicio válido.");
-      return;
-    }
-    setLoading(true);
-    setMessage("");
-    try {
-      const result = await assignExerciseToPatient(pacienteId, exerciseId);
-      if (result.ok) {
-        setMessage("✅ Ejercicio asignado correctamente.");
-        setExerciseId("");
-        setShowModal(false);
-      } else {
-        setMessage(`❌ Error: ${result.error || "No se pudo asignar"}`);
-      }
-    } catch (error) {
-      setMessage(`❌ Error al asignar: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // === Personalizar ejercicio ===
-  const handlePersonalizeExercise = async () => {
-    if (!baseExerciseId.trim()) {
-      setMessage("⚠️ Ingresa el ID base del ejercicio para personalizar.");
-      return;
-    }
-
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const patientData = await getPatientById(pacienteId);
-      if (!patientData)
-        throw new Error("No se encontró el perfil del paciente.");
-
-      const terapeutaEmail = localStorage.getItem("terapeutaEmail");
-      const result = await personalizeExercise(
-        pacienteId,
-        baseExerciseId,
-        patientData,
-        terapeutaEmail
-      );
-
-      if (result.ok || result.id) {
-        setMessage("✅ Ejercicio personalizado correctamente.");
-        setBaseExerciseId("");
-        setShowPersonalizeModal(false);
-      } else {
-        setMessage(`❌ Error: ${result.error || "No se pudo personalizar"}`);
-      }
-    } catch (error) {
-      console.error("Error en handlePersonalizeExercise:", error);
-      setMessage(`❌ Error al personalizar: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // === Ver ejercicio (abre VNESTExerciseModal) ===
   const handleViewExercise = async (exercise) => {
@@ -281,32 +216,20 @@ const PacienteDetail = () => {
 
         {/* Modales internos */}
         {showModal && (
-          <Modal
-            title="Asignar nuevo ejercicio"
-            value={exerciseId}
-            placeholder="Ej: ejercicio_001"
-            setValue={setExerciseId}
-            onClose={() => setShowModal(false)}
-            onConfirm={handleAssignExercise}
-            confirmText="Asignar"
-            loading={loading}
-            color="success"
-          />
-        )}
+  <PatientAssignExercise
+    open={showModal}
+    onClose={() => setShowModal(false)}
+    patientId={pacienteId}
+  />
+)}
 
         {showPersonalizeModal && (
-          <Modal
-            title="Crear Ejercicio Personalizado"
-            value={baseExerciseId}
-            placeholder="Ej: ejercicio_base_123"
-            setValue={setBaseExerciseId}
-            onClose={() => setShowPersonalizeModal(false)}
-            onConfirm={handlePersonalizeExercise}
-            confirmText="Personalizar"
-            loading={loading}
-            color="primary"
-          />
-        )}
+  <PacientePersonalizar
+    open={showPersonalizeModal}
+    onClose={() => setShowPersonalizeModal(false)}
+    pacienteId={pacienteId}
+  />
+)}
 
         {showVnestViewer && selectedExercise && (
           <VNESTExerciseModal

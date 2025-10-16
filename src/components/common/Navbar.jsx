@@ -25,26 +25,23 @@ const Navbar = ({ active }) => {
   ];
 
   return (
-    <nav className={`navbar fixed-top ${scrolled ? "navbar-scrolled" : ""}`}>
-      <div className="container-fluid d-flex justify-content-between align-items-center px-4">
+    <nav className={`navbar-modern fixed-top ${scrolled ? "scrolled" : ""}`}>
+      <div className="navbar-inner container-fluid px-4">
         {/* LOGO */}
         <div
-          className="navbar-brand"
-          style={{ cursor: "pointer" }}
+          className="navbar-logo"
           onClick={() => navigate("/dashboard")}
         >
-          Rehabilita
+          <span className="logo-accent">Rehabi</span>lita
         </div>
 
         {/* MENÚ */}
-        <ul className="nav d-none d-md-flex gap-4">
+        <ul className="navbar-links d-none d-md-flex gap-4">
           {tabs.map((tab) => (
-            <li className="nav-item" key={tab.key}>
+            <li key={tab.key}>
               <button
                 onClick={() => navigate(`/${tab.key}`)}
-                className={`nav-link ${
-                  active === tab.key ? "active-link" : "inactive-link"
-                }`}
+                className={`nav-btn ${active === tab.key ? "active" : ""}`}
               >
                 {tab.label}
               </button>
@@ -53,12 +50,10 @@ const Navbar = ({ active }) => {
         </ul>
 
         {/* PERFIL Y LOGOUT */}
-        <div className="d-flex align-items-center gap-3">
-          <span className="fw-semibold text-secondary small d-none d-md-inline">
-            {email}
-          </span>
-          <button onClick={handleLogout} className="btn btn-logout">
-            <i className="bi bi-box-arrow-right me-1"></i> Logout
+        <div className="navbar-actions d-flex align-items-center gap-3">
+          <span className="user-email d-none d-md-inline">{email}</span>
+          <button className="btn-logout" onClick={handleLogout}>
+            <i className="bi bi-box-arrow-right me-1"></i> Salir
           </button>
         </div>
       </div>
