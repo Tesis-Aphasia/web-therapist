@@ -142,6 +142,7 @@ const PacienteDetail = () => {
                 <th>Terapia</th>
                 <th>Estado</th>
                 <th>Fecha Asignado</th>
+                <th>Fecha Realizado</th>
                 <th className="text-end">Acción</th>
               </tr>
             </thead>
@@ -171,7 +172,14 @@ const PacienteDetail = () => {
                     {e.fecha_asignacion
                       ? new Date(e.fecha_asignacion.seconds * 1000).toLocaleDateString()
                       : "—"}
+                  
                   </td>
+                  <td>
+                    {e.ultima_fecha_realizado
+                      ? new Date(e.ultima_fecha_realizado.seconds * 1000).toLocaleDateString()
+                      : "—"}
+                  </td>
+
                   <td className="text-end">
                     <button
                       className="btn btn-sm btn-secondary"
