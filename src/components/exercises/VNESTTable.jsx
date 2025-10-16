@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import "./VNESTTable.css"; // Asegúrate de tener los estilos
+import React, { useState, useMemo, useEffect } from "react";
+import "./VNESTTable.css";
 
 const VNESTTable = ({ exercises, onEdit, onView }) => {
   // --- ESTADO PARA FILTROS ---
@@ -11,7 +11,18 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
   const [filterIdPaciente, setFilterIdPaciente] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // filas por página
+  const pageSize = 10;
+
+  // --- LIMPIAR FILTROS ---
+  const clearFilters = () => {
+    setFilterVisibilidad("Todos");
+    setFilterEstado("Todos");
+    setFilterPersonalizado("Todos");
+    setFilterVerbo("");
+    setFilterContexto("");
+    setFilterIdPaciente("");
+    setCurrentPage(1);
+  };
 
   // --- FILTRADO Y ORDENAMIENTO ---
   const filteredExercises = useMemo(() => {
@@ -54,7 +65,7 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
         const dateB = b.fecha_creacion
           ? new Date(b.fecha_creacion.seconds * 1000)
           : 0;
-        return dateB - dateA; // más recientes primero
+        return dateB - dateA;
       });
   }, [
     exercises,
@@ -66,7 +77,6 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
     filterIdPaciente,
   ]);
 
-  // --- PAGINACIÓN ---
   const totalPages = Math.ceil(filteredExercises.length / pageSize);
   const paginatedExercises = filteredExercises.slice(
     (currentPage - 1) * pageSize,
@@ -78,75 +88,100 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
     setCurrentPage(page);
   };
 
+  // --- REINICIAR PÁGINA CUANDO CAMBIAN LOS FILTROS ---
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    filterVisibilidad,
+    filterEstado,
+    filterPersonalizado,
+    filterVerbo,
+    filterContexto,
+    filterIdPaciente,
+  ]);
+
   return (
     <div className="vn-table-container">
       {/* --- FILTROS --- */}
-      <div className="mb-3 d-flex gap-3 flex-wrap align-items-center">
-        <div className="filter-group">
-          <label>Visibilidad:</label>
-          <select
-            value={filterVisibilidad}
-            onChange={(e) => setFilterVisibilidad(e.target.value)}
-          >
-            <option>Todos</option>
-            <option>publico</option>
-            <option>privado</option>
-          </select>
+      {/* --- FILTROS --- */}
+      <div className="mb-3 d-flex justify-content-between align-items-center flex-wrap">
+        {/* Contenedor de filtros */}
+        <div className="d-flex gap-3 flex-wrap align-items-center">
+          <div className="filter-group">
+            <label>Visibilidad:</label>
+            <select
+              value={filterVisibilidad}
+              onChange={(e) => setFilterVisibilidad(e.target.value)}
+            >
+              <option>Todos</option>
+              <option>publico</option>
+              <option>privado</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Estado:</label>
+            <select
+              value={filterEstado}
+              onChange={(e) => setFilterEstado(e.target.value)}
+            >
+              <option>Todos</option>
+              <option>Aprobado</option>
+              <option>Pendiente</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Personalizado:</label>
+            <select
+              value={filterPersonalizado}
+              onChange={(e) => setFilterPersonalizado(e.target.value)}
+            >
+              <option>Todos</option>
+              <option>Sí</option>
+              <option>No</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Verbo:</label>
+            <input
+              type="text"
+              placeholder="Buscar verbo"
+              value={filterVerbo}
+              onChange={(e) => setFilterVerbo(e.target.value)}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label>Contexto:</label>
+            <input
+              type="text"
+              placeholder="Buscar contexto"
+              value={filterContexto}
+              onChange={(e) => setFilterContexto(e.target.value)}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label>ID Paciente:</label>
+            <input
+              type="text"
+              placeholder="Buscar ID paciente"
+              value={filterIdPaciente}
+              onChange={(e) => setFilterIdPaciente(e.target.value)}
+            />
+          </div>
         </div>
 
-        <div className="filter-group">
-          <label>Estado:</label>
-          <select
-            value={filterEstado}
-            onChange={(e) => setFilterEstado(e.target.value)}
-          >
-            <option>Todos</option>
-            <option>Aprobado</option>
-            <option>Pendiente</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Personalizado:</label>
-          <select
-            value={filterPersonalizado}
-            onChange={(e) => setFilterPersonalizado(e.target.value)}
-          >
-            <option>Todos</option>
-            <option>Sí</option>
-            <option>No</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Verbo:</label>
-          <input
-            type="text"
-            placeholder="Buscar verbo"
-            value={filterVerbo || ""}
-            onChange={(e) => setFilterVerbo(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label>Contexto:</label>
-          <input
-            type="text"
-            placeholder="Buscar contexto"
-            value={filterContexto || ""}
-            onChange={(e) => setFilterContexto(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label>ID Paciente:</label>
-          <input
-            type="text"
-            placeholder="Buscar ID paciente"
-            value={filterIdPaciente || ""}
-            onChange={(e) => setFilterIdPaciente(e.target.value)}
-          />
-        </div>
+        {/* Botón limpiar */}
+        <button
+          className="btn btn-outline-danger mt-2 mt-md-0"
+          onClick={clearFilters}
+          style={{ whiteSpace: "nowrap", minWidth: "110px" }}
+        >
+          Limpiar ✖
+        </button>
       </div>
 
       {/* --- TABLA --- */}
@@ -158,7 +193,6 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
               <th>Contexto</th>
               <th>Verbo</th>
               <th>Personalizado</th>
-
               <th>Asignado a</th>
               <th>Estado</th>
               <th className="text-end">Acción</th>
@@ -178,7 +212,6 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
                   <td>{e.contexto || "—"}</td>
                   <td>{e.verbo || "—"}</td>
                   <td>{e.personalizado ? "Sí" : "No"}</td>
-
                   <td>{e.id_paciente || "—"}</td>
                   <td>
                     {e.revisado ? (
@@ -190,14 +223,19 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
                     )}
                   </td>
                   <td className="text-end">
-  <button className="btn btn-sm btn-primary me-2" onClick={() => onEdit(e)}>
-    Revisar
-  </button>
-  <button className="btn btn-sm btn-secondary" onClick={() => onView(e)}>
-    Ver
-  </button>
-</td>
-
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() => onEdit(e)}
+                    >
+                      Revisar
+                    </button>
+                    <button
+                      className="btn btn-sm btn-secondary"
+                      onClick={() => onView(e)}
+                    >
+                      Ver
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
