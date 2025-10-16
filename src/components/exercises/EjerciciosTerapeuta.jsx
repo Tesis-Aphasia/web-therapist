@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../common/Navbar";
-import { getAllExercises, getExerciseDetails } from "../../services/exercisesService";
+import {
+  getVisibleExercises,
+  getExerciseDetails,
+} from "../../services/exercisesService";
 import ExerciseEditor from "../editExercises/VNESTEditor";
 import SREditor from "../editExercises/SREditor";
 import "./EjerciciosTerapeuta.css";
@@ -12,23 +15,35 @@ const EjerciciosTerapeuta = () => {
   const [showVnestEditor, setShowVnestEditor] = useState(false);
   const [showSREditor, setShowSREditor] = useState(false);
 
-  // 🔹 Cargar ejercicios en tiempo real desde Firestore
+  const therapistEmail = localStorage.getItem("terapeutaEmail");
+
+  console.log("Therapist Email:", therapistEmail);
+
   useEffect(() => {
-    const unsubscribe = getAllExercises(setExercises);
-    return () => unsubscribe && unsubscribe();
-  }, []);
+    if (!therapistEmail) return;
 
-const handleEdit = async (exercise) => {
-  try {
-    const extra = await getExerciseDetails(exercise.id, exercise.terapia);
-    setSelectedExercise({ ...exercise, ...extra });
-    if (exercise.terapia === "SR") setShowSREditor(true);
-    else setShowVnestEditor(true);
-  } catch (err) {
-    console.error("❌ Error cargando detalles:", err);
-  }
-};
+    let unsubscribeFn = null;
 
+    getVisibleExercises(therapistEmail, setExercises).then((fn) => {
+      // fn será la función de unsubscribe que devuelve onSnapshot
+      unsubscribeFn = fn;
+    });
+
+    return () => {
+      if (unsubscribeFn) unsubscribeFn();
+    };
+  }, [therapistEmail]);
+
+  const handleEdit = async (exercise) => {
+    try {
+      const extra = await getExerciseDetails(exercise.id, exercise.terapia);
+      setSelectedExercise({ ...exercise, ...extra });
+      if (exercise.terapia === "SR") setShowSREditor(true);
+      else setShowVnestEditor(true);
+    } catch (err) {
+      console.error("❌ Error cargando detalles:", err);
+    }
+  };
 
   const handleCloseEditor = (updated) => {
     setShowVnestEditor(false);
@@ -37,7 +52,7 @@ const handleEdit = async (exercise) => {
     if (updated) console.log("✅ Ejercicio actualizado.");
   };
   const navigate = useNavigate();
-  
+
   const handleGenerateNew = () => {
     navigate("/ejercicios/nuevo");
   };
@@ -67,7 +82,7 @@ const handleEdit = async (exercise) => {
                   <th>Visibilidad</th>
                   <th>Estado</th>
                   <th>Autor</th>
-                
+
                   <th className="text-end">Acción</th>
                 </tr>
               </thead>
@@ -75,9 +90,9 @@ const handleEdit = async (exercise) => {
                 {exercises.map((e) => (
                   <tr key={e.id} className="table-row">
                     <td>{e.id}</td>
-                    <td>{e.terapia }</td>
+                    <td>{e.terapia}</td>
                     <td>{e.tipo}</td>
-                    
+
                     <td>
                       {e.revisado ? (
                         <span className="badge bg-success-subtle text-success px-3 py-2">

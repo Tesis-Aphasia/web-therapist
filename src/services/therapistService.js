@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 
@@ -29,17 +29,32 @@ export async function getTherapistData(email) {
 }
 
 
-/**
- * 🔹 Suscribe en tiempo real al conteo de pacientes asignados
- */
-export function subscribePatientsByTherapist(email, callback) {
-  const pacientesRef = collection(db, "pacientes");
-  const q = query(pacientesRef, where("terapeuta", "==", email));
-  const unsubscribe = onSnapshot(q, (snap) => {
-    callback(snap.size);
+export function getPatientsByTherapist(therapistEmail, callback) {
+  const ref = collection(db, "pacientes");
+  const q = query(ref, where("terapeuta", "==", therapistEmail));
+
+  const unsubscribe = onSnapshot(q, async (snapshot) => {
+    const patients = await Promise.all(
+      snapshot.docs.map(async (docSnap) => {
+        const data = docSnap.data();
+        const ejerciciosRef = collection(db, "pacientes", docSnap.id, "ejercicios_asignados");
+        const ejerciciosSnap = await getDocs(ejerciciosRef);
+        const cantidadEjercicios = ejerciciosSnap.size;
+
+        return {
+          id: docSnap.id,
+          ...data,
+          cantidadEjercicios,
+        };
+      })
+    );
+
+    callback(patients);
   });
+
   return unsubscribe;
 }
+
 
 /**
  * 🔹 Suscribe al conteo de ejercicios no revisados
@@ -53,6 +68,20 @@ export function subscribePendingExercises(callback) {
   return unsubscribe;
 }
 
+//suscribe al conteo de pacientes asignados, viene del atributo de array de pacientes en la coleccion terapeutas
+export function subscribeAssignedPatients(therapistEmail, callback) {
+  const ref = doc(db, "terapeutas", therapistEmail);
+  const unsubscribe = onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      const numPacientes = data.pacientes ? data.pacientes.length : 0;
+      callback(numPacientes);
+    } else {
+      callback(0);
+    }
+  });
+  return unsubscribe;
+}
 
 /**
  * 🔹 Obtiene la información del terapeuta

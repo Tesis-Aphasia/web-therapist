@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { getExerciseById, assignExerciseToPatient } from "../../services/assignExerciseService";
+import { getExerciseById } from "../../services/exercisesService";
+import { assignExerciseToPatient } from "../../services/patientService";
 import "./AssignExercise.css";
 
 const AssignExercise = ({ open, onClose, patient }) => {

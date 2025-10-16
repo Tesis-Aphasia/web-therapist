@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { generateExercise } from "../../services/exerciseIAService";
+import React, { useState, useEffect } from "react";
+import { generateExercise } from "../../services/exercisesService"; 
+import { getAllContexts } from "../../services/contextService"; // 👈 servicio Firebase
 import Navbar from "../common/Navbar";
 import "./AddExerciseIA.css";
 
@@ -9,10 +10,24 @@ const AddExerciseIA = () => {
   const [visibilidad, setVisibilidad] = useState("privado");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [allContexts, setAllContexts] = useState([]);
+
+  useEffect(() => {
+    const fetchContexts = async () => {
+      try {
+        const data = await getAllContexts();
+        setAllContexts(data);
+      } catch (err) {
+        console.error("❌ Error al cargar contextos:", err);
+        alert("Error al cargar los contextos desde la base de datos.");
+      }
+    };
+    fetchContexts();
+  }, []);
 
   const handleGenerate = async () => {
     if (!context.trim()) {
-      alert("Por favor ingresa un contexto para el ejercicio.");
+      alert("Por favor selecciona un contexto.");
       return;
     }
 
@@ -43,12 +58,17 @@ const AddExerciseIA = () => {
 
         <div className="form-card">
           <label>Contexto</label>
-          <input
-            type="text"
+          <select
             value={context}
             onChange={(e) => setContext(e.target.value)}
-            placeholder="Ejemplo: En el hospital, En el parque..."
-          />
+          >
+            <option value="">Selecciona un contexto...</option>
+            {allContexts.map((c) => (
+              <option key={c.id} value={c.contexto}>
+                {c.contexto}
+              </option>
+            ))}
+          </select>
 
           <label>Nivel</label>
           <select value={nivel} onChange={(e) => setNivel(e.target.value)}>

@@ -33,7 +33,7 @@ const SelectExerciseType = () => {
           </div>
 
           {/* Opción Manual */}
-          <div className="col-md-5">
+          {/* <div className="col-md-5">
             <div
               className="option-card shadow-sm border-0 rounded-4 p-4 h-100 text-center"
               onClick={() => navigate("/ejercicios/nuevo/manual")}
@@ -46,7 +46,7 @@ const SelectExerciseType = () => {
                 Diseña paso a paso un ejercicio personalizado para tus pacientes.
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../common/Navbar";
 import {
   getTherapistData,
-  subscribePatientsByTherapist,
+  subscribeAssignedPatients,
   subscribePendingExercises,
 } from "../../services/therapistService";
 import "./DashboardTerapeuta.css";
@@ -25,7 +25,7 @@ const DashboardTerapeuta = () => {
     getTherapistData(email).then((data) => setTerapeuta(data));
 
     // 🔹 Suscribirse a pacientes y ejercicios
-    const unsubPacientes = subscribePatientsByTherapist(email, setNumPacientes);
+    const unsubPacientes = subscribeAssignedPatients(email, setNumPacientes);
     const unsubEjercicios = subscribePendingExercises(setNumPendientes);
 
     return () => {

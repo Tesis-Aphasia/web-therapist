@@ -1,29 +1,16 @@
 import {
   collection,
-  query,
-  where,
-  onSnapshot,
   doc,
   getDoc,
   updateDoc,
+  Timestamp,
+  arrayUnion,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-/**
- * 🔹 Escucha en tiempo real los pacientes asignados a un terapeuta
- */
-export function getPatientsByTherapist(therapistEmail, callback) {
-  const q = query(collection(db, "pacientes"), where("terapeuta", "==", therapistEmail));
-  const unsubscribe = onSnapshot(q, (snap) => {
-    const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(docs);
-  });
-  return unsubscribe;
-}
 
-/**
- * 🔹 Buscar paciente por ID
- */
+
 export async function getPatientById(patientId) {
   try {
     const ref = doc(db, "pacientes", patientId);
@@ -36,9 +23,6 @@ export async function getPatientById(patientId) {
   }
 }
 
-/**
- * 🔹 Actualizar información del paciente
- */
 export async function updatePatient(patientId, data) {
   try {
     const ref = doc(db, "pacientes", patientId);
@@ -49,16 +33,65 @@ export async function updatePatient(patientId, data) {
   }
 }
 
-/**
- * 🔹 Asignar paciente a un terapeuta
- */
 export async function assignPatientToTherapist(patientId, therapistEmail) {
   try {
     const ref = doc(db, "pacientes", patientId);
     await updateDoc(ref, { terapeuta: therapistEmail });
+    
+    const ref2 = doc(db, "terapeutas", therapistEmail);
+    await updateDoc(ref2, { pacientes: arrayUnion(patientId) });
+
     console.log(`✅ Paciente ${patientId} asignado a ${therapistEmail}`);
   } catch (err) {
     console.error("Error al asignar paciente:", err);
     throw err;
   }
+}
+
+export async function assignExerciseToPatient(patientId, exerciseId) {
+  try {
+    const payload = {
+      user_id: patientId,      
+      exercise_id: exerciseId, 
+    };
+
+    console.log("📤 Enviando payload:", payload);
+
+    const response = await fetch("http://localhost:8000/assign-exercise/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload), 
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("⚠️ Respuesta del backend:", data);
+      throw new Error(data.detail || data.error || "Error asignando el ejercicio");
+    }
+
+    console.log(`✅ Ejercicio asignado correctamente:`, data.message);
+    return data;
+  } catch (err) {
+    console.error("❌ Error en assignExerciseToPatient:", err);
+    throw err;
+  }
+}
+
+
+
+export function getAssignedExercises(patientId, callback) {
+  const ref = collection(db, "pacientes", patientId, "ejercicios_asignados");
+
+  const unsubscribe = onSnapshot(ref, (snapshot) => {
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(data);
+  });
+
+  return unsubscribe;
 }
