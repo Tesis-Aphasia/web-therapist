@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getExerciseDetails, updateExercise } from "../../services/exercisesService";
+import {
+  getExerciseDetails,
+  updateExercise,
+} from "../../services/exercisesService";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import "./VNESTEditor.css";
@@ -9,31 +12,38 @@ const NIVELES = ["fácil", "medio", "difícil"];
 const VNESTEditor = ({ open, onClose, exercise }) => {
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // === Cargar detalles del ejercicio ===
   useEffect(() => {
     if (!exercise) return;
     const load = async () => {
       try {
+        setLoading(true);
         const data = await getExerciseDetails(exercise.id, "VNEST");
-        if (data) {
-          setForm({
-            verbo: data.verbo || "",
-            nivel: data.nivel || "fácil",
-            contexto: data.contexto || "",
-            revisado: Boolean(exercise.revisado),
-            pares: data.pares || [],
-            oraciones: data.oraciones || [],
-          });
-        }
+        const extra =
+          Array.isArray(data) && data.length > 0 ? data[0] : data || {};
+
+        setForm({
+          verbo: extra.verbo || "",
+          nivel: extra.nivel || "fácil",
+          contexto: extra.contexto || "",
+          revisado: Boolean(exercise.revisado),
+          pares: extra.pares || [],
+          oraciones: extra.oraciones || [],
+        });
       } catch (err) {
-        console.error("Error cargando VNEST:", err);
+        console.error("❌ Error cargando VNEST:", err);
         setError("No se pudo cargar el ejercicio.");
+      } finally {
+        setLoading(false);
       }
     };
     load();
   }, [exercise]);
 
+  // === Handlers ===
   const handleParChange = (idx, key, value) => {
     setForm((prev) => {
       const pares = [...prev.pares];
@@ -58,6 +68,7 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
     });
   };
 
+  // === Guardar cambios ===
   const handleSave = async () => {
     if (!exercise || !form) return;
     setSaving(true);
@@ -78,14 +89,15 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
 
       onClose(true);
     } catch (err) {
-      console.error("Error guardando VNEST:", err);
+      console.error("❌ Error guardando VNEST:", err);
       setError("No se pudo guardar el ejercicio.");
     } finally {
       setSaving(false);
     }
   };
 
-  if (!open || !form) return null;
+  // === Render ===
+  if (!open) return null;
 
   return (
     <div className="vnest-overlay">
@@ -97,146 +109,163 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
           </button>
         </header>
 
-        <div className="vnest-body scrollable">
-          {/* Campos principales */}
-          <div className="vnest-section">
-            <div className="row g-3">
-              <div className="col-md-4">
-                <label>Verbo</label>
-                <input
-                  className="form-control"
-                  value={form.verbo}
-                  onChange={(e) => setForm({ ...form, verbo: e.target.value })}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Nivel</label>
-                <select
-                  className="form-select"
-                  value={form.nivel}
-                  onChange={(e) => setForm({ ...form, nivel: e.target.value })}
-                >
-                  {NIVELES.map((n) => (
-                    <option key={n}>{n}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-4">
-                <label>Contexto</label>
-                <input
-                  className="form-control"
-                  value={form.contexto}
-                  onChange={(e) =>
-                    setForm({ ...form, contexto: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="form-check mt-3">
-              <input
-                id="revisado"
-                type="checkbox"
-                className="form-check-input"
-                checked={form.revisado}
-                onChange={(e) =>
-                  setForm({ ...form, revisado: e.target.checked })
-                }
-              />
-              <label htmlFor="revisado" className="form-check-label">
-                Marcar como revisado
-              </label>
-            </div>
+        {/* === SPINNER DE CARGA === */}
+        {loading || !form ? (
+          <div className="vnest-loading text-center p-5">
+            <div className="spinner-border text-warning" role="status"></div>
+            <p className="mt-3 fw-semibold text-muted">
+              Cargando datos del ejercicio...
+            </p>
           </div>
-
-          {/* Pares */}
-          <h5 className="section-title mt-4">Pares Sujeto - Objeto</h5>
-          {form.pares.map((p, idx) => (
-            <div key={idx} className="pair-card">
-              <div className="row g-3 mb-2">
-                <div className="col-md-6">
-                  <label>Sujeto</label>
-                  <input
-                    className="form-control"
-                    value={p.sujeto}
-                    onChange={(e) =>
-                      handleParChange(idx, "sujeto", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label>Objeto</label>
-                  <input
-                    className="form-control"
-                    value={p.objeto}
-                    onChange={(e) =>
-                      handleParChange(idx, "objeto", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-
-              {["donde", "por_que", "cuando"].map((k) => (
-                <div key={k} className="expansion-block">
-                  <label>{k.replace("_", " ").toUpperCase()}</label>
-                  {p.expansiones?.[k]?.opciones?.map((opt, i) => (
+        ) : (
+          <>
+            <div className="vnest-body scrollable">
+              {/* Campos principales */}
+              <div className="vnest-section">
+                <div className="row g-3">
+                  <div className="col-md-4">
+                    <label>Verbo</label>
                     <input
-                      key={i}
-                      className="form-control mb-1"
-                      value={opt}
+                      className="form-control"
+                      value={form.verbo}
                       onChange={(e) =>
-                        handleExpChange(idx, k, i, e.target.value)
+                        setForm({ ...form, verbo: e.target.value })
                       }
                     />
-                  ))}
-                  <div className="text-muted small">
-                    Correcta: <strong>{p.expansiones?.[k]?.opcion_correcta}</strong>
+                  </div>
+                  <div className="col-md-4">
+                    <label>Nivel</label>
+                    <select
+                      className="form-select"
+                      value={form.nivel}
+                      onChange={(e) =>
+                        setForm({ ...form, nivel: e.target.value })
+                      }
+                    >
+                      {NIVELES.map((n) => (
+                        <option key={n}>{n}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-4">
+                    <label>Contexto</label>
+                    <input
+                      className="form-control"
+                      value={form.contexto}
+                      onChange={(e) =>
+                        setForm({ ...form, contexto: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
+
+                <div className="form-check mt-3">
+                  <input
+                    id="revisado"
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={form.revisado}
+                    onChange={(e) =>
+                      setForm({ ...form, revisado: e.target.checked })
+                    }
+                  />
+                  <label htmlFor="revisado" className="form-check-label">
+                    Marcar como revisado
+                  </label>
+                </div>
+              </div>
+
+              {/* Pares */}
+              <h5 className="section-title mt-4">Pares Sujeto - Objeto</h5>
+              {form.pares.map((p, idx) => (
+                <div key={idx} className="pair-card">
+                  <div className="row g-3 mb-2">
+                    <div className="col-md-6">
+                      <label>Sujeto</label>
+                      <input
+                        className="form-control"
+                        value={p.sujeto}
+                        onChange={(e) =>
+                          handleParChange(idx, "sujeto", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label>Objeto</label>
+                      <input
+                        className="form-control"
+                        value={p.objeto}
+                        onChange={(e) =>
+                          handleParChange(idx, "objeto", e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {["donde", "por_que", "cuando"].map((k) => (
+                    <div key={k} className="expansion-block">
+                      <label>{k.replace("_", " ").toUpperCase()}</label>
+                      {p.expansiones?.[k]?.opciones?.map((opt, i) => (
+                        <input
+                          key={i}
+                          className="form-control mb-1"
+                          value={opt}
+                          onChange={(e) =>
+                            handleExpChange(idx, k, i, e.target.value)
+                          }
+                        />
+                      ))}
+                      <div className="text-muted small">
+                        Correcta:{" "}
+                        <strong>{p.expansiones?.[k]?.opcion_correcta}</strong>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ))}
+
+              {/* Oraciones */}
+              <h5 className="section-title mt-4">Oraciones (10)</h5>
+              {form.oraciones.map((o, i) => (
+                <div key={i} className="sentence-row">
+                  <input
+                    type="checkbox"
+                    checked={o.correcta}
+                    onChange={(e) =>
+                      handleOracionChange(i, "correcta", e.target.checked)
+                    }
+                  />
+                  <input
+                    className="form-control"
+                    value={o.oracion}
+                    onChange={(e) =>
+                      handleOracionChange(i, "oracion", e.target.value)
+                    }
+                  />
+                </div>
+              ))}
+
+              {error && <div className="alert alert-danger mt-3">{error}</div>}
             </div>
-          ))}
 
-          {/* Oraciones */}
-          <h5 className="section-title mt-4">Oraciones (10)</h5>
-          {form.oraciones.map((o, i) => (
-            <div key={i} className="sentence-row">
-              <input
-                type="checkbox"
-                checked={o.correcta}
-                onChange={(e) =>
-                  handleOracionChange(i, "correcta", e.target.checked)
-                }
-              />
-              <input
-                className="form-control"
-                value={o.oracion}
-                onChange={(e) =>
-                  handleOracionChange(i, "oracion", e.target.value)
-                }
-              />
-            </div>
-          ))}
-
-          {error && <div className="alert alert-danger mt-3">{error}</div>}
-        </div>
-
-        <footer className="vnest-footer">
-          <button
-            className="btn btn-light"
-            onClick={() => onClose(false)}
-            disabled={saving}
-          >
-            Cancelar
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? "Guardando..." : "Guardar cambios"}
-          </button>
-        </footer>
+            <footer className="vnest-footer">
+              <button
+                className="btn btn-light"
+                onClick={() => onClose(false)}
+                disabled={saving}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleSave}
+                disabled={saving}
+              >
+                {saving ? "Guardando..." : "Guardar cambios"}
+              </button>
+            </footer>
+          </>
+        )}
       </div>
     </div>
   );

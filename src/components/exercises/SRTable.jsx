@@ -3,30 +3,35 @@ import "./SRTable.css";
 
 const SRTable = ({ exercises, onEdit }) => {
   // --- ESTADO PARA FILTROS ---
-  const [filterVisibilidad, setFilterVisibilidad] = useState("Todos");
   const [filterEstado, setFilterEstado] = useState("Todos");
-  const [filterPersonalizado, setFilterPersonalizado] = useState("Todos");
+  const [filterIdPaciente, setFilterIdPaciente] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+
+    // --- LIMPIAR FILTROS ---
+    const clearFilters = () => {
+      setFilterEstado("Todos");
+      setFilterIdPaciente("");
+      setCurrentPage(1);
+    };
   // --- FILTRADO ---
   const filteredExercises = useMemo(() => {
     return exercises
       .filter((e) => e.terapia === "SR")
       .filter((e) => {
-        if (filterVisibilidad !== "Todos" && e.tipo !== filterVisibilidad) return false;
         if (filterEstado !== "Todos") {
           if (filterEstado === "Aprobado" && !e.revisado) return false;
           if (filterEstado === "Pendiente" && e.revisado) return false;
         }
-        if (filterPersonalizado !== "Todos") {
-          const isPersonalizado = !!e.personalizado;
-          if (filterPersonalizado === "Sí" && !isPersonalizado) return false;
-          if (filterPersonalizado === "No" && isPersonalizado) return false;
-        }
+        if (
+          filterIdPaciente &&
+          !e.id_paciente?.toString().includes(filterIdPaciente)
+        )
+          return false;
         return true;
       });
-  }, [exercises, filterVisibilidad, filterEstado, filterPersonalizado]);
+      }, [exercises, filterEstado, filterIdPaciente]);
 
   // --- PAGINACIÓN ---
   const totalPages = Math.ceil(filteredExercises.length / pageSize);
@@ -41,44 +46,45 @@ const SRTable = ({ exercises, onEdit }) => {
   };
 
   return (
+    <div className="sr-page">
     <div className="sr-table-container">
       {/* --- FILTROS --- */}
-      <div className="mb-3 d-flex gap-3 flex-wrap align-items-center">
-        <div className="filter-group">
-          <label>Visibilidad:</label>
-          <select
-            value={filterVisibilidad}
-            onChange={(e) => setFilterVisibilidad(e.target.value)}
-          >
-            <option>Todos</option>
-            <option>publico</option>
-            <option>privado</option>
-          </select>
-        </div>
+      <div className="filters-box flex-wrap align-items-center">
+        {/* Contenedor de filtros */}
+      
 
-        <div className="filter-group">
-          <label>Estado:</label>
-          <select
-            value={filterEstado}
-            onChange={(e) => setFilterEstado(e.target.value)}
-          >
-            <option>Todos</option>
-            <option>Aprobado</option>
-            <option>Pendiente</option>
-          </select>
-        </div>
+          <div className="filter-group">
+            <label>Estado:</label>
+            <select
+              value={filterEstado}
+              onChange={(e) => setFilterEstado(e.target.value)}
+            >
+              <option>Todos</option>
+              <option>Aprobado</option>
+              <option>Pendiente</option>
+            </select>
+          </div>
 
-        <div className="filter-group">
-          <label>Personalizado:</label>
-          <select
-            value={filterPersonalizado}
-            onChange={(e) => setFilterPersonalizado(e.target.value)}
-          >
-            <option>Todos</option>
-            <option>Sí</option>
-            <option>No</option>
-          </select>
-        </div>
+
+          <div className="filter-group">
+            <label>ID Paciente:</label>
+            <input
+              type="text"
+              placeholder="Buscar ID paciente"
+              value={filterIdPaciente}
+              onChange={(e) => setFilterIdPaciente(e.target.value)}
+            />
+          </div>
+        
+
+        {/* Botón limpiar */}
+        <button
+          className="btn btn-outline-danger mt-2 mt-md-0"
+          onClick={clearFilters}
+          style={{ whiteSpace: "nowrap", minWidth: "110px" }}
+        >
+          Limpiar ✖
+        </button>
       </div>
 
       {/* --- TABLA --- */}
@@ -87,11 +93,11 @@ const SRTable = ({ exercises, onEdit }) => {
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Personalizado</th>
-              <th>ID Paciente</th>
-              <th>Visibilidad</th>
+              <th>Asignado a</th>
+              <th>Pregunta</th>
+              <th>Respuesta</th>
               <th>Estado</th>
-              <th>Autor</th>
+              
               <th className="text-end">Acción</th>
             </tr>
           </thead>
@@ -106,9 +112,9 @@ const SRTable = ({ exercises, onEdit }) => {
               paginatedExercises.map((e) => (
                 <tr key={e.id}>
                   <td>{e.id}</td>
-                  <td>{e.personalizado ? "Sí" : "No"}</td>
-                  <td>{e.personalizado ? e.id_paciente || "—" : "—"}</td>
-                  <td>{e.tipo}</td>
+                  <td>{e.id_paciente || "—"}</td>
+                  <td>{e.pregunta || "—"}</td>
+                  <td>{e.rta_correcta || "—"}</td>
                   <td>
                     {e.revisado ? (
                       <span className="badge bg-success">Aprobado</span>
@@ -118,7 +124,6 @@ const SRTable = ({ exercises, onEdit }) => {
                       </span>
                     )}
                   </td>
-                  <td>{e.creado_por || "—"}</td>
                   <td className="text-end">
                     <button
                       className="btn btn-sm btn-primary"
@@ -158,6 +163,7 @@ const SRTable = ({ exercises, onEdit }) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

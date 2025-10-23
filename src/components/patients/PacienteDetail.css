@@ -10,13 +10,13 @@
 /* === LAYOUT === */
 .paciente-page {
   max-width: 1100px;
-  margin: 90px auto 0 auto; /* Espacio debajo del navbar */
-  padding: 3rem 1.5rem;
+  margin: 90px auto 0 auto;
   font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
 }
 
 /* === HEADER === */
-.paciente-header {
+.paciente-page .paciente-header {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -25,19 +25,19 @@
   gap: 1rem;
 }
 
-.paciente-header h2 {
+.paciente-page .paciente-header h2 {
   color: var(--primary-dark);
   font-weight: 700;
 }
 
-.actions {
+.paciente-page .actions {
   display: flex;
   gap: 0.8rem;
 }
 
 /* === BOTONES === */
-.btn-primary,
-.btn-secondary {
+.paciente-page .btn-primary,
+.paciente-page .btn-secondary {
   border: none;
   border-radius: 0.6rem;
   font-weight: 600;
@@ -46,173 +46,116 @@
   transition: all 0.2s ease;
 }
 
-.btn-primary {
+.paciente-page .btn-primary {
   background: var(--primary);
   color: #fff;
 }
 
-.btn-primary:hover {
+.paciente-page .btn-primary:hover {
   background: var(--primary-dark);
 }
 
-.btn-secondary {
+.paciente-page .btn-secondary {
   background: rgba(239, 126, 6, 0.1);
   color: var(--primary-dark);
 }
 
-.btn-secondary:hover {
+.paciente-page .btn-secondary:hover {
   background: rgba(239, 126, 6, 0.2);
 }
 
-.table-responsive {
+/* === TABLA === */
+.paciente-page .table-responsive {
   background: #ffffff;
   border-radius: 1rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
-.table {
+.paciente-page .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
 }
 
-.table thead.table-dark {
+.paciente-page .table thead.table-dark {
   background: #fff8f0;
   color: var(--primary-dark);
   font-weight: 700;
 }
 
-.table th,
-.table td {
+.paciente-page .table th,
+.paciente-page .table td {
   padding: 0.9rem 1rem;
   border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
 }
 
-.table-striped tbody tr:nth-child(odd) {
+.paciente-page .table-striped tbody tr:nth-child(odd) {
   background-color: #fdfcfb;
 }
 
-.table-hover tbody tr:hover {
-  background: rgba(239, 126, 6, 0.06);
-}
-
-.badge.bg-success {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--primary-dark);
-  font-weight: 600;
-  border-radius: 0.5rem;
-  padding: 0.3rem 0.7rem;
-}
-
-.badge.bg-warning {
-  background: rgba(255, 193, 7, 0.15);
-  color: var(--primary-dark);
-}
-
-
-.paciente-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-/* Encabezado crema/naranja */
-.paciente-table thead {
-  background: #fff8f0;
-  color: var(--primary-dark);
-  font-weight: 700;
-  text-transform: none;
-}
-
-.paciente-table th,
-.paciente-table td {
-  padding: 0.9rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-/* Filas alternadas (striped) */
-.paciente-table tbody tr:nth-child(odd) {
-  background-color: #fdfcfb;
-}
-
-/* Hover cálido naranja */
-.paciente-table tbody tr:hover {
+.paciente-page .table-hover tbody tr:hover {
   background: rgba(239, 126, 6, 0.06);
   transition: background 0.25s ease;
 }
 
-/* IDs y campos opacos */
-.paciente-table td:first-child {
-  color: rgba(0, 0, 0, 0.45);
-  font-weight: 500;
-}
-
-/* Estados (badge) */
-.badge-estado {
+/* === BADGES === */
+.paciente-page .badge {
   font-weight: 600;
   border-radius: 0.6rem;
-  padding: 0.35rem 0.75rem;
+  padding: 0.3rem 0.7rem;
   font-size: 0.8rem;
 }
 
-/* Completado */
-.badge-completado {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--success);
-}
-
-/* Pendiente */
-.badge-pendiente {
-  background: rgba(255, 193, 7, 0.15);
-  color: var(--warning);
-}
-
-/* En progreso */
-.badge-en-progreso {
-  background: rgba(59, 130, 246, 0.15);
-  color: #1d4ed8;
-}
-
-/* Ajustes responsive */
-@media (max-width: 768px) {
-  .paciente-table {
-    font-size: 0.9rem;
-  }
-
-  .paciente-table th,
-  .paciente-table td {
-    padding: 0.75rem 0.7rem;
-  }
-}
-
-
-/* === ESTADO === */
-.badge-estado {
-  display: inline-block;
-  padding: 0.3rem 0.8rem;
-  border-radius: 1rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.badge-pendiente {
-  background: rgba(255, 193, 7, 0.15);
-  color: var(--warning);
-}
-
-.badge-completado {
+.paciente-page .badge-completado {
   background: rgba(25, 135, 84, 0.15);
   color: var(--success);
 }
 
-.badge-en-progreso {
+.paciente-page .badge-pendiente {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--warning);
+}
+
+.paciente-page .badge-en-progreso {
   background: rgba(59, 130, 246, 0.15);
   color: #1d4ed8;
 }
 
-/* === MODALES === */
-.modal-backdrop {
+/* === PAGINACIÓN === */
+.paciente-page .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  font-weight: 500;
+}
+
+.paciente-page .pagination button {
+  background: #fff;
+  border: 1px solid var(--primary);
+  color: var(--primary-dark);
+  padding: 0.45rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.paciente-page .pagination button:hover:not(:disabled) {
+  background: var(--primary);
+  color: #fff;
+}
+
+.paciente-page .pagination button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* === MODAL === */
+.paciente-page .modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
@@ -223,9 +166,7 @@
   animation: fadeIn 0.25s ease-in-out;
 }
 
-
-/* Contenedor del modal */
-.modal-box {
+.paciente-page .modal-box {
   background: #ffffff;
   color: var(--text);
   border-radius: 1rem;
@@ -235,14 +176,11 @@
   overflow-y: auto;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
   animation: slideIn 0.25s ease;
-  font-family: "Segoe UI", Arial, sans-serif;
   position: relative;
   padding: 1.5rem 1.8rem 1rem 1.8rem;
 }
 
-
-/* Header */
-.modal-header {
+.paciente-page .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -251,14 +189,14 @@
   margin-bottom: 1rem;
 }
 
-.modal-header h5 {
+.paciente-page .modal-header h5 {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--primary-dark);
   margin: 0;
 }
 
-.close-btn {
+.paciente-page .close-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -267,23 +205,22 @@
   transition: color 0.2s;
 }
 
-.close-btn:hover {
+.paciente-page .close-btn:hover {
   color: var(--primary-dark);
 }
 
-/* Cuerpo */
-.modal-body {
+.paciente-page .modal-body {
   padding: 0.5rem 0;
 }
 
-.modal-body label {
+.paciente-page .modal-body label {
   font-weight: 600;
   color: var(--text);
   display: block;
   margin-bottom: 0.3rem;
 }
 
-.modal-body input {
+.paciente-page .modal-body input {
   width: 100%;
   padding: 0.7rem 0.9rem;
   border-radius: 0.6rem;
@@ -293,14 +230,13 @@
   transition: all 0.2s ease;
 }
 
-.modal-body input:focus {
+.paciente-page .modal-body input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(239, 126, 6, 0.15);
   outline: none;
 }
 
-/* Footer */
-.modal-footer {
+.paciente-page .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -308,7 +244,7 @@
   margin-top: 1.2rem;
 }
 
-.btn-cancel {
+.paciente-page .btn-cancel {
   background: #f8f8f8;
   border: 1px solid #ddd;
   color: #555;
@@ -319,12 +255,24 @@
   transition: all 0.2s ease;
 }
 
-.btn-cancel:hover {
+.paciente-page .btn-cancel:hover {
   background: #eee;
   border-color: #ccc;
 }
 
-/* === Animaciones === */
+/* === ALERTAS === */
+.paciente-page .alert-msg {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 0.6rem;
+  background: #fffaf3;
+  color: var(--primary-dark);
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid rgba(239, 126, 6, 0.2);
+}
+
+/* === ANIMACIONES === */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -345,65 +293,23 @@
   }
 }
 
-/* === MENSAJE ALERTA === */
-.alert-msg {
-  margin-top: 1.5rem;
-  padding: 0.9rem 1.2rem;
-  border-radius: 0.6rem;
-  background: #fffaf3;
-  color: var(--primary-dark);
-  text-align: center;
-  font-weight: 500;
-  border: 1px solid rgba(239, 126, 6, 0.2);
-}
-
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .paciente-header {
+  .paciente-page .paciente-header {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .actions {
+  .paciente-page .actions {
     flex-direction: column;
   }
 
-  .btn-primary,
-  .btn-secondary {
+  .paciente-page .btn-primary,
+  .paciente-page .btn-secondary {
     width: 100%;
   }
 
-  .paciente-table {
+  .paciente-page .table {
     font-size: 0.9rem;
   }
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.8rem;
-  font-weight: 500;
-}
-
-.pagination button {
-  background: #fff;
-  border: 1px solid var(--primary);
-  color: var(--primary-dark);
-  padding: 0.45rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: var(--primary);
-  color: #fff;
-}
-
-.pagination button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }

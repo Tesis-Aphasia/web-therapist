@@ -20,37 +20,42 @@ const EjerciciosTerapeuta = () => {
   const [showSREditor, setShowSREditor] = useState(false);
   const [showVnestViewer, setShowVnestViewer] = useState(false);
   const [activeTerapia, setActiveTerapia] = useState("VNEST");
-
-  const therapistEmail = localStorage.getItem("terapeutaEmail");
+  const [loadingModal, setLoadingModal] = useState(false);
+    const therapistEmail = localStorage.getItem("terapeutaEmail");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!therapistEmail) return;
-
+  
     let unsubscribeFn = null;
-
+  
     (async () => {
       unsubscribeFn = await getVisibleExercises(
         therapistEmail,
         async (visibleExercises) => {
-          const detailed = await Promise.all(
+          setExercises(visibleExercises);
+          const detailedResults = await Promise.allSettled(
             visibleExercises.map(async (e) => {
               try {
-                const extra = await getExerciseDetails(e.id, e.terapia);
+                const extras = await getExerciseDetails(e.id, e.terapia);
+                const extra =
+                  Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
+  
                 if (e.terapia === "VNEST") {
                   return {
                     ...e,
-                    contexto: extra.contexto,
-                    verbo: extra.verbo,
-                    nivel: extra.nivel,
+                    contexto: extra.contexto ?? e.contexto,
+                    verbo: extra.verbo ?? e.verbo,
+                    nivel: extra.nivel ?? e.nivel,
                   };
                 } else if (e.terapia === "SR") {
                   return {
                     ...e,
-                    pregunta: extra.pregunta,
-                    rta_correcta: extra.rta_correcta,
+                    pregunta: extra.pregunta ?? e.pregunta,
+                    rta_correcta: extra.rta_correcta ?? e.rta_correcta,
                   };
                 }
+  
                 return { ...e, ...extra };
               } catch (err) {
                 console.error("❌ Error cargando detalles:", e.id, err);
@@ -58,38 +63,65 @@ const EjerciciosTerapeuta = () => {
               }
             })
           );
-
-          setExercises(detailed);
-          console.log("📋 Ejercicios visibles actualizados:", detailed);
+  
+          // Filtrar los que se resolvieron correctamente
+          const fulfilled = detailedResults
+            .filter((r) => r.status === "fulfilled")
+            .map((r) => r.value);
+  
+          // Actualizar con los detalles finales
+          setExercises(fulfilled);
+  
+          console.log("✅ Ejercicios visibles actualizados:", fulfilled);
         }
       );
     })();
-
+  
     return () => {
       if (unsubscribeFn) unsubscribeFn();
     };
   }, [therapistEmail]);
+  
 
   const handleEdit = async (exercise) => {
     try {
-      const extra = await getExerciseDetails(exercise.id, exercise.terapia);
-      setSelectedExercise({ ...exercise, ...extra });
+      setLoadingModal(true);           // mostrar spinner
+      setSelectedExercise(null);       // limpiar datos anteriores
+  
+      const extras = await getExerciseDetails(exercise.id, exercise.terapia);
+      const extra =
+        Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
+  
+      setSelectedExercise({ ...exercise, ...extra }); // cargar detalles
+  
       if (exercise.terapia === "SR") setShowSREditor(true);
       else setShowVnestEditor(true);
     } catch (err) {
       console.error("❌ Error cargando detalles:", err);
+    } finally {
+      setLoadingModal(false);          // ocultar spinner
     }
   };
+  
 
   const handleViewExercise = async (exercise) => {
     try {
-      const extra = await getExerciseDetails(exercise.id, exercise.terapia);
-      setSelectedExercise({ ...exercise, ...extra });
-      setShowVnestViewer(true);
+      setLoadingModal(true);           // mostrar spinner
+      setShowVnestViewer(true);        // abrir modal de inmediato
+      setSelectedExercise(null);       // limpiar contenido previo
+  
+      const extras = await getExerciseDetails(exercise.id, exercise.terapia);
+      const extra =
+        Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
+  
+      setSelectedExercise({ ...exercise, ...extra }); // datos completos
     } catch (err) {
       console.error("❌ Error cargando detalles del ejercicio:", err);
+    } finally {
+      setLoadingModal(false);          // ocultar spinner
     }
   };
+  
 
   const handleCloseEditor = (updated) => {
     setShowVnestEditor(false);

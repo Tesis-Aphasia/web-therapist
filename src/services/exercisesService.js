@@ -48,6 +48,7 @@ export async function getVisibleExercises(therapistEmail, callback) {
         if (e.tipo === "publico") return true;
         if (e.tipo === "privado" && e.creado_por === therapistEmail) return true;
         if (e.tipo === "privado" && patientIds.includes(e.creado_por)) return true;
+        if (e.tipo === "privado" && patientIds.includes(e.id_paciente)) return true;
         return false;
       });
 
@@ -61,23 +62,28 @@ export async function getVisibleExercises(therapistEmail, callback) {
   }
 }
 
-/**
- * 🔹 Trae los detalles extendidos (cuando el usuario edita)
- *    según el tipo de terapia.
- */
+
 export async function getExerciseDetails(id, terapia) {
   try {
-    const col =
-      terapia === "VNEST" ? "ejercicios_VNEST" : "ejercicios_SR";
-    const ref = doc(db, col, id);
+    // Determinar la colección según la terapia
+    const colName = terapia === "VNEST" ? "ejercicios_VNEST" : "ejercicios_SR";
+    const ref = doc(db, colName, id);
     const snap = await getDoc(ref);
-    if (snap.exists()) return snap.data();
-    return null;
+
+    if (snap.exists()) {
+      const data = snap.data();
+      console.log(`📄 Detalles obtenidos de ${colName}/${id}:`, data);
+      return data;
+    } else {
+      console.warn(`⚠️ No se encontró documento ${id} en ${colName}`);
+      return null;
+    }
   } catch (err) {
-    console.error("Error obteniendo detalles del ejercicio:", err);
+    console.error("❌ Error obteniendo detalles del ejercicio:", err);
     throw err;
   }
 }
+
 
 export async function getExerciseById(id) {
   try {

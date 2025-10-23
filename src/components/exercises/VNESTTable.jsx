@@ -101,12 +101,12 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
   ]);
 
   return (
+    <div className="vnest-page">
     <div className="vn-table-container">
       {/* --- FILTROS --- */}
-      {/* --- FILTROS --- */}
-      <div className="mb-3 d-flex justify-content-between align-items-center flex-wrap">
+      <div className="filters-box flex-wrap align-items-center">
         {/* Contenedor de filtros */}
-        <div className="d-flex gap-3 flex-wrap align-items-center">
+        
           <div className="filter-group">
             <label>Visibilidad:</label>
             <select
@@ -172,7 +172,7 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
               onChange={(e) => setFilterIdPaciente(e.target.value)}
             />
           </div>
-        </div>
+        
 
         {/* Botón limpiar */}
         <button
@@ -267,6 +267,7 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

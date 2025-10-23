@@ -107,7 +107,7 @@ const PacienteDetail = () => {
   const currentItems = detailedExercises.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="page-container">
+    <div className="page-container paciente-page">
       <Navbar active="pacientes" />
 
       <main className="container py-5 mt-5">

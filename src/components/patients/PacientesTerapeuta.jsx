@@ -40,10 +40,10 @@ const PacientesTerapeuta = () => {
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
   return (
-    <div className="page-container">
+    <div className="page-container patients-page">
       <Navbar active="pacientes" />
 
-      <main className="container py-5 mt-5">
+    <main className="container py-5 mt-5">
         {/* Encabezado Moderno */}
         <div className="patients-topbar">
           <h2 className="page-title">Pacientes</h2>
@@ -112,28 +112,28 @@ const PacientesTerapeuta = () => {
 
         {/* Paginación */}
         {totalPages > 1 && (
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <span>
-              Página {currentPage} de {totalPages}
-            </span>
-            <div className="btn-group">
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                onClick={handlePrev}
-                disabled={currentPage === 1}
-              >
-                ◀
-              </button>
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                onClick={handleNext}
-                disabled={currentPage === totalPages}
-              >
-                ▶
-              </button>
-            </div>
+        <div className="pagination-bar">
+          <span>
+            Página {currentPage} de {totalPages}
+          </span>
+          <div className="btn-group">
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              onClick={handlePrev}
+              disabled={currentPage === 1}
+            >
+              ◀
+            </button>
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+            >
+              ▶
+            </button>
           </div>
-        )}
+        </div>
+      )}
 
         {/* Modal agregar paciente */}
         {showAddModal && (
