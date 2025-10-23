@@ -16,7 +16,6 @@ const PacientesTerapeuta = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
 
-  // 🔹 Obtener pacientes del terapeuta
   useEffect(() => {
     if (!terapeutaEmail) {
       navigate("/");
@@ -26,12 +25,10 @@ const PacientesTerapeuta = () => {
     return () => unsubscribe && unsubscribe();
   }, [terapeutaEmail, navigate]);
 
-  // 🔍 Filtro por email
   const filteredPatients = pacientes.filter((p) =>
     p.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // 📄 Paginación calculada
   const totalPages = Math.ceil(filteredPatients.length / perPage);
   const startIndex = (currentPage - 1) * perPage;
   const currentPatients = filteredPatients.slice(
@@ -46,13 +43,14 @@ const PacientesTerapeuta = () => {
     <div className="page-container">
       <Navbar active="pacientes" />
 
-      <main className="patients-page">
-        {/* Header */}
-        <div className="patients-header">
-          <h2>Pacientes</h2>
-          <div className="actions">
+      <main className="container py-5 mt-5">
+        {/* Encabezado Moderno */}
+        <div className="patients-topbar">
+          <h2 className="page-title">Pacientes</h2>
+          <div className="patients-actions">
             <input
               type="text"
+              className="search-input"
               placeholder="Buscar por email..."
               value={search}
               onChange={(e) => {
@@ -60,16 +58,19 @@ const PacientesTerapeuta = () => {
                 setCurrentPage(1);
               }}
             />
-            <button onClick={() => setShowAddModal(true)}>
+            <button
+              className="btn btn-primary fw-semibold d-flex align-items-center gap-2"
+              onClick={() => setShowAddModal(true)}
+            >
               + Agregar Paciente
             </button>
           </div>
         </div>
 
         {/* Tabla */}
-        <div className="table-wrapper">
-          <table className="patients-table">
-            <thead>
+        <div className="table-responsive">
+          <table className="table align-middle mb-0 table-striped table-hover">
+            <thead className="table-dark">
               <tr>
                 <th>Nombre</th>
                 <th>Email</th>
@@ -78,49 +79,59 @@ const PacientesTerapeuta = () => {
               </tr>
             </thead>
             <tbody>
-              {currentPatients.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.nombre || "—"}</td>
-                  <td>{p.email || "—"}</td>
-                  <td>
-                    <span className="badge-count">
-                      {p.cantidadEjercicios ?? 0}
-                    </span>
-                  </td>
-                  <td className="text-end">
-                    <button
-                      className="btn-outline"
-                      onClick={() => navigate(`/pacientes/${p.id}`)}
-                    >
-                      Ver detalles
-                    </button>
-                  </td>
-                </tr>
-              ))}
-
-              {currentPatients.length === 0 && (
+              {currentPatients.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="no-data">
+                  <td colSpan="4" className="text-center py-4 text-muted">
                     No hay pacientes registrados.
                   </td>
                 </tr>
+              ) : (
+                currentPatients.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.nombre || "—"}</td>
+                    <td>{p.email || "—"}</td>
+                    <td>
+                      
+                        {p.cantidadEjercicios ?? 0}
+                      
+                    </td>
+                    <td className="text-end">
+                      <button
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => navigate(`/pacientes/${p.id}`)}
+                      >
+                        Ver detalles
+                      </button>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </div>
 
         {/* Paginación */}
-        {filteredPatients.length > 10 && (
-          <div className="pagination">
-            <button onClick={handlePrev} disabled={currentPage === 1}>
-              ← Anterior
-            </button>
+        {totalPages > 1 && (
+          <div className="d-flex justify-content-between align-items-center mt-3">
             <span>
               Página {currentPage} de {totalPages}
             </span>
-            <button onClick={handleNext} disabled={currentPage === totalPages}>
-              Siguiente →
-            </button>
+            <div className="btn-group">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handlePrev}
+                disabled={currentPage === 1}
+              >
+                ◀
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+              >
+                ▶
+              </button>
+            </div>
           </div>
         )}
 

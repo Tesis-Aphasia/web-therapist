@@ -1,197 +1,192 @@
 :root {
   --primary: #ef7e06;
-  --primary-dark: #d86e03;
-  --text: #222;
-  --muted: #666;
-  --bg-light: #fff;
-  --table-border: #eee;
+  --primary-dark: #c96a05;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text: #1e293b;
+  --muted: #6b7280;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* === LAYOUT === */
-.patients-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  margin-top: 80px;
-  padding: 3rem 1.5rem;
+/* === CONTENEDOR PRINCIPAL === */
+.container {
   font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
 }
 
-/* === HEADER === */
-.patients-header {
+/* === ENCABEZADO SUPERIOR === */
+.patients-topbar {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.8rem;
+  flex-wrap: wrap;
   gap: 1rem;
+  margin-bottom: 1.8rem;
 }
 
-.patients-header h2 {
+.page-title {
   font-weight: 700;
   color: var(--primary-dark);
+  font-size: 1.7rem;
+  margin: 0;
 }
 
-.actions {
+.patients-actions {
   display: flex;
   align-items: center;
   gap: 0.8rem;
 }
 
-.actions input {
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.8rem;
-  width: 240px;
-  font-size: 0.95rem;
-  transition: border-color 0.2s ease;
+/* === INPUT DE BÚSQUEDA === */
+.search-input {
+  border: 1.8px solid #e5e7eb;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: #fff;
+  transition: all 0.25s ease;
 }
 
-.actions input:focus {
+.search-input:focus {
   border-color: var(--primary);
-  outline: none;
   box-shadow: 0 0 0 3px rgba(239, 126, 6, 0.15);
+  outline: none;
 }
 
-.actions button {
-  background: var(--primary);
-  color: #fff;
+/* === BOTONES === */
+.btn {
   border: none;
   border-radius: 0.5rem;
-  padding: 0.55rem 1rem;
   font-weight: 600;
-  transition: background 0.2s ease;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
-.actions button:hover {
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
   background: var(--primary-dark);
 }
 
-/* === TABLA === */
-.table-wrapper {
-  border: 1px solid var(--table-border);
-  border-radius: 0.8rem;
-  overflow-x: auto;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+.btn-secondary {
+  background: rgba(239, 126, 6, 0.1);
+  color: var(--primary-dark);
 }
 
-.patients-table {
+.btn-secondary:hover {
+  background: rgba(239, 126, 6, 0.2);
+}
+
+/* === TABLA ESTILO VNEST === */
+.table-responsive {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--bg-light);
   font-size: 0.95rem;
 }
 
-.patients-table thead {
+.table thead.table-dark {
   background: #fff8f0;
-  border-bottom: 2px solid var(--primary);
+  color: var(--primary-dark);
+  font-weight: 700;
 }
 
-.patients-table th {
-  text-align: left;
+.table th,
+.table td {
   padding: 0.9rem 1rem;
-  font-weight: 600;
-  color: var(--primary-dark);
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
 }
 
-.patients-table td {
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid #f3f3f3;
-  color: var(--text);
+.table-striped tbody tr:nth-child(odd) {
+  background-color: #fdfcfb;
 }
 
-/* .patients-table tr:hover {
-  background: rgba(239, 126, 6, 0.05);
-} */
-
-/* === BADGE === */
-.badge-count {
-  display: inline-block;
-  background: rgba(239, 126, 6, 0.1);
-  color: var(--primary-dark);
-  font-weight: 600;
-  padding: 0.3rem 0.7rem;
-  border-radius: 1rem;
-  font-size: 0.85rem;
+.table-hover tbody tr:hover {
+  background: rgba(239, 126, 6, 0.06);
+  transition: background 0.25s ease;
 }
 
-/* === BOTONES DE ACCIÓN === */
-.btn-outline {
-  border: 1px solid var(--primary);
-  background: transparent;
-  color: var(--primary-dark);
+/* === BADGES === */
+.badge.bg-success {
+
   font-weight: 600;
   border-radius: 0.5rem;
-  padding: 0.4rem 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-outline:hover {
-  background: rgba(239, 126, 6, 0.1);
+  padding: 0.3rem 0.7rem;
 }
 
 /* === PAGINACIÓN === */
-.pagination {
-  display: flex;
-  justify-content: center;
+.d-flex.justify-content-between.mt-3 {
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 2rem;
-  font-size: 0.95rem;
+  background: var(--card-bg);
+  border-radius: 0.8rem;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  margin-top: 1.5rem !important;
 }
 
-.pagination button {
-  background: #fff;
-  border: 1px solid var(--primary);
+.btn-group .btn-outline-secondary {
+  border: 1.5px solid var(--primary);
   color: var(--primary-dark);
-  padding: 0.4rem 0.9rem;
   border-radius: 0.5rem;
-  cursor: pointer;
+  padding: 0.4rem 0.8rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
-.pagination button:hover {
+.btn-group .btn-outline-secondary:hover:not(:disabled) {
   background: var(--primary);
   color: #fff;
 }
 
-.pagination button:disabled {
+.btn-group .btn-outline-secondary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* === VACÍO === */
-.no-data {
-  text-align: center;
-  color: var(--muted);
-  padding: 1.2rem 0;
+/* === ESTADOS VACÍOS === */
+.text-muted {
+  color: var(--muted) !important;
 }
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .actions {
+  .patients-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patients-actions {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
   }
 
-  .actions input {
+  .search-input,
+  .btn {
     width: 100%;
   }
 
-  .actions button {
-    width: 100%;
-  }
-
-  .patients-table th,
-  .patients-table td {
-    padding: 0.7rem;
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: 0.5rem;
+  .table {
+    font-size: 0.9rem;
   }
 }

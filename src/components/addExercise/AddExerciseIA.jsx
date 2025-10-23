@@ -88,8 +88,8 @@ const AddExerciseIA = () => {
                 value={visibilidad}
                 onChange={(e) => setVisibilidad(e.target.value)}
               >
-                <option value="privado">Privado</option>
                 <option value="publico">Público</option>
+                <option value="privado">Privado</option>
               </select>
             </div>
           </div>

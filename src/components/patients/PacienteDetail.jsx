@@ -21,7 +21,7 @@ const PacienteDetail = () => {
   const [showVnestViewer, setShowVnestViewer] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
 
   // 📄 Paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -110,7 +110,7 @@ const PacienteDetail = () => {
     <div className="page-container">
       <Navbar active="pacientes" />
 
-      <main className="paciente-page">
+      <main className="container py-5 mt-5">
         <div className="paciente-header">
           <h2>Ejercicios del paciente</h2>
           <div className="actions">
@@ -130,76 +130,72 @@ const PacienteDetail = () => {
         </div>
 
         {/* Tabla */}
-        <div className="table-wrapper">
-          <table className="paciente-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Contexto</th>
-                <th>Verbo</th>
-                <th>Personalizado</th>
-                <th>Nivel</th>
-                <th>Terapia</th>
-                <th>Estado</th>
-                <th>Fecha Asignado</th>
-                <th>Fecha Realizado</th>
-                <th className="text-end">Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((e) => (
-                <tr key={e.id}>
-                  <td>{e.id || "—"}</td>
-                  <td>{e.contexto || "—"}</td>
-                  <td>{e.verbo || "—"}</td>
-                  <td>{e.personalizado ? "Sí" : "No"}</td>
-                  <td>{e.nivel || "—"}</td>
-                  <td>{e.terapia || "—"}</td>
-                  <td>
-                    <span
-                      className={`badge-estado ${
-                        e.estado?.toLowerCase() === "completado"
-                          ? "badge-completado"
-                          : e.estado?.toLowerCase() === "en progreso"
-                          ? "badge-en-progreso"
-                          : "badge-pendiente"
-                      }`}
-                    >
-                      {e.estado || "Pendiente"}
-                    </span>
-                  </td>
-                  <td>
-                    {e.fecha_asignacion
-                      ? new Date(e.fecha_asignacion.seconds * 1000).toLocaleDateString()
-                      : "—"}
-                  
-                  </td>
-                  <td>
-                    {e.ultima_fecha_realizado
-                      ? new Date(e.ultima_fecha_realizado.seconds * 1000).toLocaleDateString()
-                      : "—"}
-                  </td>
-
-                  <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-secondary"
-                      onClick={() => handleViewExercise(e)}
-                    >
-                      Ver
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {currentItems.length === 0 && (
-                <tr>
-                  <td colSpan="9" className="no-data">
-                    No hay ejercicios asignados.
-                  </td>
-                </tr>
+        <div className="table-responsive">
+  <table className="table align-middle mb-0 table-striped table-hover">
+    <thead className="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Contexto</th>
+        <th>Verbo</th>
+        <th>Personalizado</th>
+        <th>Nivel</th>
+        <th>Terapia</th>
+        <th>Estado</th>
+        <th>Fecha Asignado</th>
+        <th>Fecha Realizado</th>
+        <th className="text-end">Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentItems.length === 0 ? (
+        <tr>
+          <td colSpan="10" className="text-center py-4 text-muted">
+            No hay ejercicios asignados.
+          </td>
+        </tr>
+      ) : (
+        currentItems.map((e) => (
+          <tr key={e.id}>
+            <td>{e.id || "—"}</td>
+            <td>{e.contexto || "—"}</td>
+            <td>{e.verbo || "—"}</td>
+            <td>{e.personalizado ? "Sí" : "No"}</td>
+            <td>{e.nivel || "—"}</td>
+            <td>{e.terapia || "—"}</td>
+            <td>
+              {e.estado?.toLowerCase() === "completado" ? (
+                <span className="badge bg-success">Completado</span>
+              ) : e.estado?.toLowerCase() === "en progreso" ? (
+                <span className="badge bg-warning text-dark">En progreso</span>
+              ) : (
+                <span className="badge bg-warning text-dark">Pendiente</span>
               )}
-            </tbody>
-          </table>
-        </div>
+            </td>
+            <td>
+              {e.fecha_asignacion
+                ? new Date(e.fecha_asignacion.seconds * 1000).toLocaleDateString()
+                : "—"}
+            </td>
+            <td>
+              {e.ultima_fecha_realizado
+                ? new Date(e.ultima_fecha_realizado.seconds * 1000).toLocaleDateString()
+                : "—"}
+            </td>
+            <td className="text-end">
+              <button
+                className="btn btn-sm btn-secondary"
+                onClick={() => handleViewExercise(e)}
+              >
+                Ver
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+
 
         {/* 🔹 Paginación */}
         {totalPages > 1 && (

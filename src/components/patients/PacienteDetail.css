@@ -64,33 +64,128 @@
   background: rgba(239, 126, 6, 0.2);
 }
 
-/* === TABLA === */
-.table-wrapper {
-  border: 1px solid #eee;
-  border-radius: 0.8rem;
-  overflow-x: auto;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+.table-responsive {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table thead.table-dark {
+  background: #fff8f0;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+.table th,
+.table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+  background-color: #fdfcfb;
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(239, 126, 6, 0.06);
+}
+
+.badge.bg-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--primary-dark);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.badge.bg-warning {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--primary-dark);
+}
+
 
 .paciente-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  font-size: 0.95rem;
 }
 
-.paciente-table th {
+/* Encabezado crema/naranja */
+.paciente-table thead {
   background: #fff8f0;
   color: var(--primary-dark);
-  font-weight: 600;
-  padding: 0.9rem 1rem;
-  text-align: left;
+  font-weight: 700;
+  text-transform: none;
 }
 
+.paciente-table th,
 .paciente-table td {
-  padding: 0.8rem 1rem;
-  border-top: 1px solid #f3f3f3;
-  color: var(--text);
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
 }
+
+/* Filas alternadas (striped) */
+.paciente-table tbody tr:nth-child(odd) {
+  background-color: #fdfcfb;
+}
+
+/* Hover cálido naranja */
+.paciente-table tbody tr:hover {
+  background: rgba(239, 126, 6, 0.06);
+  transition: background 0.25s ease;
+}
+
+/* IDs y campos opacos */
+.paciente-table td:first-child {
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+}
+
+/* Estados (badge) */
+.badge-estado {
+  font-weight: 600;
+  border-radius: 0.6rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Completado */
+.badge-completado {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+/* Pendiente */
+.badge-pendiente {
+  background: rgba(255, 193, 7, 0.15);
+  color: var(--warning);
+}
+
+/* En progreso */
+.badge-en-progreso {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1d4ed8;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .paciente-table {
+    font-size: 0.9rem;
+  }
+
+  .paciente-table th,
+  .paciente-table td {
+    padding: 0.75rem 0.7rem;
+  }
+}
+
 
 /* === ESTADO === */
 .badge-estado {
