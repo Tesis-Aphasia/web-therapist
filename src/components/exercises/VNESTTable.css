@@ -1,15 +1,4 @@
-:root {
-  --primary: #ef7e06;
-  --primary-dark: #c96a05;
-  --bg: #f8fafc;
-  --card-bg: #ffffff;
-  --text: #1e293b;
-  --muted: #6b7280;
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
+/* Component-specific styles for VNESTTable */
 
 /* === CONTENEDOR GENERAL === */
 .vn-table-container {

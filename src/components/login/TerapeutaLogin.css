@@ -1,10 +1,4 @@
-:root {
-  --primary: #ef7e06;
-  --primary-dark: #c96a05;
-  --bg-light: #fff;
-  --muted: #6b6b6b;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
+/* Component-specific styles for TerapeutaLogin */
 
 /* === CONTENEDOR PRINCIPAL === */
 .login-container {

@@ -1,11 +1,4 @@
-:root {
-  --primary: #ef7e06;
-  --primary-dark: #c96a05;
-  --gradient-accent: linear-gradient(90deg, #ef7e06, #f8b86b);
-  --text-dark: #2c2c2c;
-  --text-muted: #707070;
-  --bg-blur: rgba(255, 255, 255, 0.85);
-}
+/* Component-specific styles for Navbar */
 
 /* === NAVBAR BASE === */
 .navbar-modern {

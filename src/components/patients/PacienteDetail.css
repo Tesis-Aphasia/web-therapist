@@ -1,11 +1,4 @@
-:root {
-  --primary: #ef7e06;
-  --primary-dark: #d86e03;
-  --text: #222;
-  --muted: #666;
-  --success: #198754;
-  --warning: #ffc107;
-}
+/* Component-specific styles for PacienteDetail */
 
 /* === LAYOUT === */
 .paciente-page {

@@ -1,55 +1,107 @@
 import { doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { ERROR_MESSAGES, COLLECTIONS } from "../constants";
 
 
+/**
+ * Authenticate therapist with email and password
+ * @param {string} email - Therapist email
+ * @param {string} password - Therapist password
+ * @returns {Promise<boolean>} Authentication result
+ * @throws {Error} If authentication fails
+ */
 export async function loginTherapist(email, password) {
   try {
-    const ref = doc(db, "terapeutas", email);
+    if (!email || !password) {
+      throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+    }
+
+    const ref = doc(db, COLLECTIONS.THERAPISTS, email);
     const snap = await getDoc(ref);
 
-    if (!snap.exists()) return false;
+    if (!snap.exists()) {
+      throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+    }
+
     const data = snap.data();
-    return data.password === password;
+    const isValid = data.password === password;
+    
+    if (!isValid) {
+      throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+    }
+
+    return true;
   } catch (err) {
     console.error("Error al verificar terapeuta:", err);
     throw err;
   }
 }
 
+/**
+ * Get therapist data by email
+ * @param {string} email - Therapist email
+ * @returns {Promise<Object|null>} Therapist data or null if not found
+ * @throws {Error} If database operation fails
+ */
 export async function getTherapistData(email) {
   try {
-    const ref = doc(db, "terapeutas", email);
+    if (!email) {
+      throw new Error("Email is required");
+    }
+
+    const ref = doc(db, COLLECTIONS.THERAPISTS, email);
     const snap = await getDoc(ref);
-    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    
+    if (!snap.exists()) {
+      return null;
+    }
+
+    return { id: snap.id, ...snap.data() };
   } catch (err) {
     console.error("Error obteniendo terapeuta:", err);
-    return null;
+    throw err;
   }
 }
 
 
+/**
+ * Subscribe to patients by therapist email
+ * @param {string} therapistEmail - Therapist email
+ * @param {Function} callback - Callback function to receive patients data
+ * @returns {Function} Unsubscribe function
+ */
 export function getPatientsByTherapist(therapistEmail, callback) {
-  const ref = collection(db, "pacientes");
+  if (!therapistEmail) {
+    console.error("Therapist email is required");
+    return () => {};
+  }
+
+  const ref = collection(db, COLLECTIONS.PATIENTS);
   const q = query(ref, where("terapeuta", "==", therapistEmail));
 
   const unsubscribe = onSnapshot(q, async (snapshot) => {
-    const patients = await Promise.all(
-      snapshot.docs.map(async (docSnap) => {
-        const data = docSnap.data();
-        const ejerciciosRef = collection(db, "pacientes", docSnap.id, "ejercicios_asignados");
-        const ejerciciosSnap = await getDocs(ejerciciosRef);
-        const cantidadEjercicios = ejerciciosSnap.size;
+    try {
+      const patients = await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          const data = docSnap.data();
+          const ejerciciosRef = collection(db, COLLECTIONS.PATIENTS, docSnap.id, COLLECTIONS.ASSIGNED_EXERCISES);
+          const ejerciciosSnap = await getDocs(ejerciciosRef);
+          const cantidadEjercicios = ejerciciosSnap.size;
 
-        return {
-          id: docSnap.id,
-          ...data,
-          cantidadEjercicios,
-        };
-      })
-    );
+          return {
+            id: docSnap.id,
+            ...data,
+            cantidadEjercicios,
+          };
+        })
+      );
 
-    callback(patients);
+      callback(patients);
+    } catch (error) {
+      console.error("Error processing patients data:", error);
+      callback([]);
+    }
   });
 
   return unsubscribe;

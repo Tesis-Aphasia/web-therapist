@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../common/Navbar";
+import Table from "../common/Table";
+import Pagination from "../common/Pagination";
+import Badge from "../common/Badge";
+import { usePagination } from "../../hooks/usePagination";
+import { useModal } from "../../hooks/useModal";
 import {
   getAssignedExercises,
 } from "../../services/patientService";
@@ -18,14 +23,13 @@ const PacienteDetail = () => {
   const [exercises, setExercises] = useState([]);
   const [detailedExercises, setDetailedExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [showVnestViewer, setShowVnestViewer] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
+  const { isOpen: showVnestViewer, openModal: openVnestViewer, closeModal: closeVnestViewer } = useModal();
+  const { isOpen: showModal, openModal: openModal, closeModal: closeModal } = useModal();
+  const { isOpen: showPersonalizeModal, openModal: openPersonalizeModal, closeModal: closePersonalizeModal } = useModal();
   const [message] = useState("");
 
-  // 📄 Paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  // Pagination
+  const pagination = usePagination(detailedExercises, 10);
 
   // === 1️⃣ Cargar ejercicios asignados al paciente ===
   useEffect(() => {

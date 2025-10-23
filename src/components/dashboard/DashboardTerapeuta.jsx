@@ -1,41 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../common/Navbar";
-import {
-  getTherapistData,
-  subscribeAssignedPatients,
-  subscribePendingVisibleExercises,
-} from "../../services/therapistService";
+import { useAuth } from "../../hooks/useAuth";
+import { ROUTES } from "../../constants";
 import "./DashboardTerapeuta.css";
 
 const DashboardTerapeuta = () => {
   const navigate = useNavigate();
-  const [terapeuta, setTerapeuta] = useState(null);
+  const { user, getCurrentUser } = useAuth();
   const [numPacientes, setNumPacientes] = useState(0);
   const [numPendientes, setNumPendientes] = useState(0);
 
   useEffect(() => {
-    const email = localStorage.getItem("terapeutaEmail");
-    if (!email) {
-      navigate("/");
-      return;
+    const terapeuta = getCurrentUser();
+    if (terapeuta) {
+      setTerapeuta(terapeuta);
     }
-
-    getTherapistData(email).then((data) => setTerapeuta(data));
-
-    let unsubEjercicios;
-    const unsubPacientes = subscribeAssignedPatients(email, setNumPacientes);
-
-    async function subscribeEjercicios() {
-      unsubEjercicios = await subscribePendingVisibleExercises(email, setNumPendientes);
-    }
-    subscribeEjercicios();
-
-    return () => {
-      unsubPacientes && unsubPacientes();
-      unsubEjercicios && unsubEjercicios();
-    };
-  }, [navigate]);
+  }, [getCurrentUser]);
 
   return (
     <div className="page-container">
@@ -55,7 +36,7 @@ const DashboardTerapeuta = () => {
             <div className="card-content">
               <div>
                 <p className="label">Pacientes asociados</p>
-                <h1 className="clickable-number" onClick={() => navigate("/pacientes")}>
+                <h1 className="clickable-number" onClick={() => navigate(ROUTES.PATIENTS)}>
                   {numPacientes}
                 </h1>
               </div>
@@ -74,7 +55,7 @@ const DashboardTerapeuta = () => {
             <div className="card-content">
               <div>
                 <p className="label">Ejercicios por revisar</p>
-                <h1 className="clickable-number" onClick={() => navigate("/ejercicios")}>
+                <h1 className="clickable-number" onClick={() => navigate(ROUTES.EXERCISES)}>
                   {numPendientes}
                 </h1>
               </div>

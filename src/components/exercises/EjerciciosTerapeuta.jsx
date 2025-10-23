@@ -1,104 +1,69 @@
 // EjerciciosTerapeuta.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../common/Navbar";
-import {
-  getVisibleExercises,
-  getExerciseDetails,
-} from "../../services/exercisesService";
 import VNESTTable from "./VNESTTable";
 import SRETable from "./SRTable";
 import ExerciseEditor from "../editExercises/VNESTEditor";
 import SREditor from "../editExercises/SREditor";
 import VNESTExerciseModal from "./VNESTExerciseModal";
+import { useExercises } from "../../hooks/useExercises";
+import { useModal } from "../../hooks/useModal";
+import { useAuth } from "../../hooks/useAuth";
+import { ROUTES } from "../../constants";
 import "./EjerciciosTerapeuta.css";
 
 const EjerciciosTerapeuta = () => {
-  const [exercises, setExercises] = useState([]);
+  const navigate = useNavigate();
+  const { exercises, loading } = useExercises();
+  const { isOpen: showVnestEditor, openModal: openVnestEditor, closeModal: closeVnestEditor } = useModal();
+  const { isOpen: showSREditor, openModal: openSREditor, closeModal: closeSREditor } = useModal();
+  const { isOpen: showVnestViewer, openModal: openVnestViewer, closeModal: closeVnestViewer } = useModal();
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [showVnestEditor, setShowVnestEditor] = useState(false);
-  const [showSREditor, setShowSREditor] = useState(false);
-  const [showVnestViewer, setShowVnestViewer] = useState(false);
   const [activeTerapia, setActiveTerapia] = useState("VNEST");
 
-  const therapistEmail = localStorage.getItem("terapeutaEmail");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!therapistEmail) return;
-
-    let unsubscribeFn = null;
-
-    (async () => {
-      unsubscribeFn = await getVisibleExercises(
-        therapistEmail,
-        async (visibleExercises) => {
-          const detailed = await Promise.all(
-            visibleExercises.map(async (e) => {
-              try {
-                const extra = await getExerciseDetails(e.id, e.terapia);
-                if (e.terapia === "VNEST") {
-                  return {
-                    ...e,
-                    contexto: extra.contexto,
-                    verbo: extra.verbo,
-                    nivel: extra.nivel,
-                  };
-                } else if (e.terapia === "SR") {
-                  return {
-                    ...e,
-                    pregunta: extra.pregunta,
-                    rta_correcta: extra.rta_correcta,
-                  };
-                }
-                return { ...e, ...extra };
-              } catch (err) {
-                console.error("❌ Error cargando detalles:", e.id, err);
-                return e;
-              }
-            })
-          );
-
-          setExercises(detailed);
-          console.log("📋 Ejercicios visibles actualizados:", detailed);
-        }
-      );
-    })();
-
-    return () => {
-      if (unsubscribeFn) unsubscribeFn();
-    };
-  }, [therapistEmail]);
-
-  const handleEdit = async (exercise) => {
-    try {
-      const extra = await getExerciseDetails(exercise.id, exercise.terapia);
-      setSelectedExercise({ ...exercise, ...extra });
-      if (exercise.terapia === "SR") setShowSREditor(true);
-      else setShowVnestEditor(true);
-    } catch (err) {
-      console.error("❌ Error cargando detalles:", err);
+  const handleEdit = (exercise) => {
+    setSelectedExercise(exercise);
+    if (exercise.terapia === "SR") {
+      openSREditor();
+    } else {
+      openVnestEditor();
     }
   };
 
-  const handleViewExercise = async (exercise) => {
-    try {
-      const extra = await getExerciseDetails(exercise.id, exercise.terapia);
-      setSelectedExercise({ ...exercise, ...extra });
-      setShowVnestViewer(true);
-    } catch (err) {
-      console.error("❌ Error cargando detalles del ejercicio:", err);
-    }
+  const handleViewExercise = (exercise) => {
+    setSelectedExercise(exercise);
+    openVnestViewer();
   };
 
   const handleCloseEditor = (updated) => {
-    setShowVnestEditor(false);
-    setShowSREditor(false);
+    closeVnestEditor();
+    closeSREditor();
     setSelectedExercise(null);
     if (updated) console.log("✅ Ejercicio actualizado.");
   };
 
-  const handleGenerateNew = () => navigate("/ejercicios/nuevo");
+  const handleCloseViewer = () => {
+    closeVnestViewer();
+    setSelectedExercise(null);
+  };
+
+  const handleGenerateNew = () => navigate(ROUTES.NEW_EXERCISE);
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <Navbar active="ejercicios" />
+        <main className="container py-5 mt-5">
+          <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Cargando ejercicios...</span>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -155,10 +120,7 @@ const EjerciciosTerapeuta = () => {
       {showVnestViewer && selectedExercise && (
         <VNESTExerciseModal
           exercise={selectedExercise}
-          onClose={() => {
-            setShowVnestViewer(false);
-            setSelectedExercise(null);
-          }}
+          onClose={handleCloseViewer}
         />
       )}
     </div>

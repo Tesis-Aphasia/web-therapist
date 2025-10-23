@@ -1,13 +1,4 @@
-:root {
-  --primary: #ef7e06;
-  --primary-dark: #c96a05;
-  --bg-light: #f8fafc;
-  --card-bg: #ffffff;
-  --text: #1e293b;
-  --text-muted: #6b7280;
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 12px 25px rgba(0, 0, 0, 0.12);
-}
+/* Component-specific styles for DashboardTerapeuta */
 
 /* === LAYOUT GENERAL === */
 .dashboard-page {

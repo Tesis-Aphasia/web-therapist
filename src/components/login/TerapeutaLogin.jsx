@@ -1,34 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginTherapist } from "../../services/therapistService";
+import { useAuth } from "../../hooks/useAuth";
+import { ROUTES } from "../../constants";
 import "./TerapeutaLogin.css";
 
 const TerapeutaLogin = () => {
   const navigate = useNavigate();
+  const { login, loading, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const isValid = await loginTherapist(email, password);
-      if (!isValid) {
-        setError("Credenciales incorrectas. Verifica tu email o contraseña.");
-        setLoading(false);
-        return;
-      }
-      localStorage.setItem("terapeutaEmail", email);
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("Error en login:", err);
-      setError("Error al iniciar sesión. Intenta nuevamente.");
-    } finally {
-      setLoading(false);
+    
+    const result = await login(email, password);
+    if (result.success) {
+      navigate(ROUTES.DASHBOARD);
     }
   };
 
