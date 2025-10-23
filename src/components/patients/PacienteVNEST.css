@@ -1,0 +1,239 @@
+:root {
+    --primary: #ef7e06;
+    --primary-dark: #c96a05;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --muted: #6b7280;
+    --success: #16a34a;
+    --warning: #f59e0b;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* === CONTENEDOR GENERAL === */
+  .vnest-page .vn-table-container {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    margin-top: 1.5rem;
+  }
+  
+  /* === BLOQUE DE FILTROS === */
+  .vnest-page .filters-box {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    padding: 1.2rem;
+    margin-bottom: 1.8rem !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  
+  /* Cada grupo de filtro */
+  .vnest-page .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 140px;
+  }
+  
+  .vnest-page .filter-group label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  
+  .vnest-page .filter-group select,
+  .vnest-page .filter-group input {
+    border: 1.8px solid #e5e7eb;
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: #fff;
+    transition: all 0.25s ease;
+  }
+  
+  .vnest-page .filter-group select:hover,
+  .vnest-page .filter-group input:hover {
+    border-color: var(--primary);
+  }
+  
+  .vnest-page .filter-group select:focus,
+  .vnest-page .filter-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(239, 126, 6, 0.15);
+    outline: none;
+  }
+  
+  /* === TABLA === */
+  .vnest-page .table-responsive {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  
+  .vnest-page .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  
+  .vnest-page .table thead {
+    background: #fff8f0;
+    color: var(--primary-dark);
+    font-weight: 700;
+  }
+  
+  .vnest-page .table th,
+  .vnest-page .table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+  }
+  
+  .vnest-page .table tbody tr:hover {
+    background: rgba(239, 126, 6, 0.05);
+  }
+  
+  /* ID más opaco */
+  .vnest-page .table td:first-child {
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 500;
+  }
+  
+  /* === BADGES === */
+  .vnest-page .badge {
+    display: inline-block;
+    font-weight: 600;
+    border-radius: 0.6rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .vnest-page .badge.bg-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: white;
+  }
+  
+  .vnest-page .badge.bg-warning {
+    background: rgba(255, 193, 7, 0.15);
+    color: var(--warning);
+  }
+  
+  /* === BOTONES === */
+  .vnest-page .btn {
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  
+  .vnest-page .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  
+  .vnest-page .btn-primary:hover {
+    background: var(--primary-dark);
+  }
+  
+  .vnest-page .btn-secondary {
+    background: rgba(239, 126, 6, 0.1);
+    color: var(--primary-dark);
+  }
+  
+  .vnest-page .btn-secondary:hover {
+    background: rgba(239, 126, 6, 0.2);
+  }
+  
+  .vnest-page .btn-outline-danger {
+    border: 1.5px solid #dc2626;
+    background: transparent;
+    color: #dc2626;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.25s ease;
+  }
+  
+  .vnest-page .btn-outline-danger:hover {
+    background: #dc2626;
+    color: #fff;
+  }
+  
+  /* === PAGINACIÓN === */
+  .vnest-page .pagination-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--card-bg);
+    border-radius: 0.8rem;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    margin-top: 1.5rem !important;
+  }
+  
+  .vnest-page .btn-group .btn-outline-secondary {
+    border: 1.5px solid var(--primary);
+    color: var(--primary-dark);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-weight: 600;
+    transition: all 0.25s ease;
+  }
+  
+  .vnest-page .btn-group .btn-outline-secondary:hover:not(:disabled) {
+    background: var(--primary);
+    color: #fff;
+  }
+  
+  .vnest-page .btn-group .btn-outline-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* === TEXTO VACÍO === */
+  .vnest-page .text-muted {
+    color: var(--muted) !important;
+  }
+  
+  /* === RESPONSIVE === */
+  @media (max-width: 992px) {
+    .vnest-page .filter-group {
+      min-width: 48%;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .vnest-page .filters-box {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .vnest-page .filter-group {
+      width: 100%;
+    }
+  
+    .vnest-page .table {
+      font-size: 0.9rem;
+    }
+  
+    .vnest-page .btn {
+      font-size: 0.8rem;
+    }
+  
+    .vnest-page .pagination-bar {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  

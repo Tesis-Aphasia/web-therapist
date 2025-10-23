@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../common/Navbar";
-import {
-  getAssignedExercises,
-} from "../../services/patientService";
-import {
-  getExerciseDetails,
-  getExerciseById,
-} from "../../services/exercisesService";
+import { getAssignedExercises } from "../../services/patientService";
+import { getExerciseDetails, getExerciseById } from "../../services/exercisesService";
 import VNESTExerciseModal from "../exercises/VNESTExerciseModal";
 import PacientePersonalizar from "./PacientePersonalizar";
 import PatientAssignExercise from "./PatientAssignExercise";
+import PacienteVNEST from "./PacienteVNEST";
+import PacienteSR from "./PacienteSR";
 import "./PacienteDetail.css";
 
 const PacienteDetail = () => {
@@ -21,19 +18,17 @@ const PacienteDetail = () => {
   const [showVnestViewer, setShowVnestViewer] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
+  const [activeTerapia, setActiveTerapia] = useState("VNEST");
   const [message] = useState("");
 
-  // 📄 Paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  // === 1️⃣ Cargar ejercicios asignados al paciente ===
+  // 📄 Cargar ejercicios asignados al paciente
   useEffect(() => {
     if (!pacienteId) return;
     const unsubscribe = getAssignedExercises(pacienteId, setExercises);
     return () => unsubscribe && unsubscribe();
   }, [pacienteId]);
 
+  // 🔍 Cargar detalles de cada ejercicio
   useEffect(() => {
     const loadDetails = async () => {
       if (exercises.length === 0) {
@@ -65,7 +60,7 @@ const PacienteDetail = () => {
           })
         );
 
-        // 🔹 Ordenar por fecha (más recientes primero)
+        // 🔹 Ordenar por fecha
         detailed.sort((a, b) => {
           const fechaA = a.fecha_asignacion?.seconds || 0;
           const fechaB = b.fecha_asignacion?.seconds || 0;
@@ -73,14 +68,12 @@ const PacienteDetail = () => {
         });
 
         setDetailedExercises(detailed);
-        setCurrentPage(1); // resetear paginación al recargar
       } catch (error) {
         console.error("Error cargando ejercicios detallados:", error);
       }
     };
     loadDetails();
   }, [exercises]);
-
 
   // === Ver ejercicio (abre VNESTExerciseModal) ===
   const handleViewExercise = async (exercise) => {
@@ -101,16 +94,12 @@ const PacienteDetail = () => {
     }
   };
 
-  // === Calcular ejercicios visibles según la página ===
-  const totalPages = Math.ceil(detailedExercises.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = detailedExercises.slice(startIndex, startIndex + itemsPerPage);
-
   return (
     <div className="page-container paciente-page">
       <Navbar active="pacientes" />
 
       <main className="container py-5 mt-5">
+        {/* === HEADER === */}
         <div className="paciente-header">
           <h2>Ejercicios del paciente</h2>
           <div className="actions">
@@ -129,111 +118,54 @@ const PacienteDetail = () => {
           </div>
         </div>
 
-        {/* Tabla */}
-        <div className="table-responsive">
-  <table className="table align-middle mb-0 table-striped table-hover">
-    <thead className="table-dark">
-      <tr>
-        <th>ID</th>
-        <th>Contexto</th>
-        <th>Verbo</th>
-        <th>Personalizado</th>
-        <th>Nivel</th>
-        <th>Terapia</th>
-        <th>Estado</th>
-        <th>Fecha Asignado</th>
-        <th>Fecha Realizado</th>
-        <th className="text-end">Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      {currentItems.length === 0 ? (
-        <tr>
-          <td colSpan="10" className="text-center py-4 text-muted">
-            No hay ejercicios asignados.
-          </td>
-        </tr>
-      ) : (
-        currentItems.map((e) => (
-          <tr key={e.id}>
-            <td>{e.id || "—"}</td>
-            <td>{e.contexto || "—"}</td>
-            <td>{e.verbo || "—"}</td>
-            <td>{e.personalizado ? "Sí" : "No"}</td>
-            <td>{e.nivel || "—"}</td>
-            <td>{e.terapia || "—"}</td>
-            <td>
-              {e.estado?.toLowerCase() === "completado" ? (
-                <span className="badge bg-success">Completado</span>
-              ) : e.estado?.toLowerCase() === "en progreso" ? (
-                <span className="badge bg-warning text-dark">En progreso</span>
-              ) : (
-                <span className="badge bg-warning text-dark">Pendiente</span>
-              )}
-            </td>
-            <td>
-              {e.fecha_asignacion
-                ? new Date(e.fecha_asignacion.seconds * 1000).toLocaleDateString()
-                : "—"}
-            </td>
-            <td>
-              {e.ultima_fecha_realizado
-                ? new Date(e.ultima_fecha_realizado.seconds * 1000).toLocaleDateString()
-                : "—"}
-            </td>
-            <td className="text-end">
-              <button
-                className="btn btn-sm btn-secondary"
-                onClick={() => handleViewExercise(e)}
-              >
-                Ver
-              </button>
-            </td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
-
-
-        {/* 🔹 Paginación */}
-        {totalPages > 1 && (
-          <div className="pagination">
+        {/* --- FILTRO DE TERAPIAS --- */}
+        <div className="terapia-tabs mb-4">
+          {["VNEST", "SR"].map((terapia) => (
             <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
+              key={terapia}
+              className={`tab-btn ${
+                activeTerapia === terapia ? "active-tab" : ""
+              }`}
+              onClick={() => setActiveTerapia(terapia)}
             >
-              ← Anterior
+              {terapia}
             </button>
-            <span>Página {currentPage} de {totalPages}</span>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Siguiente →
-            </button>
-          </div>
+          ))}
+        </div>
+
+        {/* === TABLA SEGÚN TERAPIA === */}
+        {activeTerapia === "VNEST" ? (
+          <PacienteVNEST
+            exercises={detailedExercises.filter((e) => e.terapia === "VNEST")}
+            onView={handleViewExercise}
+            onEdit={() => {}}
+          />
+        ) : (
+          <PacienteSR
+            exercises={detailedExercises.filter((e) => e.terapia === "SR")}
+            onEdit={() => {}}
+            onView={handleViewExercise}
+          />
         )}
 
         {message && <div className="alert-msg fade-in">{message}</div>}
 
-        {/* Modales internos */}
+        {/* === MODALES === */}
         {showModal && (
-  <PatientAssignExercise
-    open={showModal}
-    onClose={() => setShowModal(false)}
-    patientId={pacienteId}
-  />
-)}
+          <PatientAssignExercise
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            patientId={pacienteId}
+          />
+        )}
 
         {showPersonalizeModal && (
-  <PacientePersonalizar
-    open={showPersonalizeModal}
-    onClose={() => setShowPersonalizeModal(false)}
-    pacienteId={pacienteId}
-  />
-)}
+          <PacientePersonalizar
+            open={showPersonalizeModal}
+            onClose={() => setShowPersonalizeModal(false)}
+            pacienteId={pacienteId}
+          />
+        )}
 
         {showVnestViewer && selectedExercise && (
           <VNESTExerciseModal
@@ -248,50 +180,5 @@ const PacienteDetail = () => {
     </div>
   );
 };
-
-// ---------- COMPONENTE MODAL ----------
-const Modal = ({
-  title,
-  value,
-  placeholder,
-  setValue,
-  onClose,
-  onConfirm,
-  confirmText,
-  loading,
-  color,
-}) => (
-  <div className="modal-backdrop">
-    <div className="modal-box">
-      <header className="modal-header">
-        <h5>{title}</h5>
-        <button className="close-btn" onClick={onClose}>
-          ✕
-        </button>
-      </header>
-      <div className="modal-body">
-        <label>ID del ejercicio</label>
-        <input
-          type="text"
-          value={value}
-          placeholder={placeholder}
-          onChange={(e) => setValue(e.target.value)}
-        />
-      </div>
-      <footer className="modal-footer">
-        <button className="btn-cancel" onClick={onClose} disabled={loading}>
-          Cancelar
-        </button>
-        <button
-          className={`btn-${color}`}
-          onClick={onConfirm}
-          disabled={loading}
-        >
-          {loading ? "Procesando..." : confirmText}
-        </button>
-      </footer>
-    </div>
-  </div>
-);
 
 export default PacienteDetail;
