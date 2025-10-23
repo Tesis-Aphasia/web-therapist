@@ -25,6 +25,36 @@ export function getAllExercises(callback) {
   return unsubscribe;
 }
 
+export async function getVisibleExercisesOnce(therapistEmail) {
+  try {
+    // 1️⃣ Obtener IDs (emails o algo identificador) de los pacientes del terapeuta
+    const pacientesRef = collection(db, "pacientes");
+    const pacientesQuery = query(pacientesRef, where("terapeuta", "==", therapistEmail));
+    const pacientesSnap = await getDocs(pacientesQuery);
+    const patientIds = pacientesSnap.docs.map((doc) => doc.id);
+
+    // 2️⃣ Obtener todos los ejercicios
+    const ejerciciosRef = collection(db, "ejercicios");
+    const ejerciciosSnap = await getDocs(ejerciciosRef);
+    const allExercises = ejerciciosSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // 3️⃣ Filtrar según visibilidad
+    const visibleExercises = allExercises.filter((e) => {
+      if (e.tipo === "publico") return true;
+      if (e.tipo === "privado" && e.creado_por === therapistEmail && !patientIds.includes(e.id_paciente)) return true;
+      return false;
+    });
+
+    return visibleExercises;
+  } catch (err) {
+    console.error("❌ Error en getVisibleExercisesOnce:", err);
+    return [];
+  }
+}
+
 export async function getVisibleExercises(therapistEmail, callback) {
   try {
     // 1️⃣ Obtener IDs (emails o algo identificador) de los pacientes del terapeuta
@@ -126,6 +156,18 @@ export async function updateExercise(id, data) {
     console.error("Error al actualizar ejercicio:", err);
     throw err;
   }
+}
+
+/** 🔹 Actualizar los campos específicos del ejercicio SR */
+export async function updateExerciseSR(id, data) {
+  try {
+    const ref = doc(db, "ejercicios_SR", id);
+    await updateDoc(ref, data);
+    console.log(`✅ Ejercicio SR ${id} actualizado`);
+  } catch (err) {
+    console.error("Error al actualizar ejercicio SR:", err);
+    throw err;
+  } 
 }
 
 /**

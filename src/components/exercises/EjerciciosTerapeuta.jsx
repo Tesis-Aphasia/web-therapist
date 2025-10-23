@@ -11,6 +11,8 @@ import SRETable from "./SRTable";
 import ExerciseEditor from "../editExercises/VNESTEditor";
 import SREditor from "../editExercises/SREditor";
 import VNESTExerciseModal from "./VNESTExerciseModal";
+import SRExerciseModal from "./SRExerciseModal";
+
 import "./EjerciciosTerapeuta.css";
 
 const EjerciciosTerapeuta = () => {
@@ -19,16 +21,18 @@ const EjerciciosTerapeuta = () => {
   const [showVnestEditor, setShowVnestEditor] = useState(false);
   const [showSREditor, setShowSREditor] = useState(false);
   const [showVnestViewer, setShowVnestViewer] = useState(false);
+  const [showSRViewer, setShowSRViewer] = useState(false);
   const [activeTerapia, setActiveTerapia] = useState("VNEST");
   const [loadingModal, setLoadingModal] = useState(false);
-    const therapistEmail = localStorage.getItem("terapeutaEmail");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const therapistEmail = localStorage.getItem("terapeutaEmail");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!therapistEmail) return;
-  
+
     let unsubscribeFn = null;
-  
+
     (async () => {
       unsubscribeFn = await getVisibleExercises(
         therapistEmail,
@@ -39,8 +43,10 @@ const EjerciciosTerapeuta = () => {
               try {
                 const extras = await getExerciseDetails(e.id, e.terapia);
                 const extra =
-                  Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
-  
+                  Array.isArray(extras) && extras.length > 0
+                    ? extras[0]
+                    : extras || {};
+
                 if (e.terapia === "VNEST") {
                   return {
                     ...e,
@@ -55,7 +61,7 @@ const EjerciciosTerapeuta = () => {
                     rta_correcta: extra.rta_correcta ?? e.rta_correcta,
                   };
                 }
-  
+
                 return { ...e, ...extra };
               } catch (err) {
                 console.error("❌ Error cargando detalles:", e.id, err);
@@ -63,71 +69,74 @@ const EjerciciosTerapeuta = () => {
               }
             })
           );
-  
+
           // Filtrar los que se resolvieron correctamente
           const fulfilled = detailedResults
             .filter((r) => r.status === "fulfilled")
             .map((r) => r.value);
-  
+
           // Actualizar con los detalles finales
           setExercises(fulfilled);
-  
+
           console.log("✅ Ejercicios visibles actualizados:", fulfilled);
         }
       );
     })();
-  
+
     return () => {
       if (unsubscribeFn) unsubscribeFn();
     };
-  }, [therapistEmail]);
-  
+  }, [therapistEmail, refreshKey]);
 
   const handleEdit = async (exercise) => {
     try {
-      setLoadingModal(true);           // mostrar spinner
-      setSelectedExercise(null);       // limpiar datos anteriores
-  
+      setLoadingModal(true); // mostrar spinner
+      setSelectedExercise(null); // limpiar datos anteriores
+
       const extras = await getExerciseDetails(exercise.id, exercise.terapia);
       const extra =
         Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
-  
+
       setSelectedExercise({ ...exercise, ...extra }); // cargar detalles
-  
+
       if (exercise.terapia === "SR") setShowSREditor(true);
       else setShowVnestEditor(true);
     } catch (err) {
       console.error("❌ Error cargando detalles:", err);
     } finally {
-      setLoadingModal(false);          // ocultar spinner
+      setLoadingModal(false); // ocultar spinner
     }
   };
-  
 
   const handleViewExercise = async (exercise) => {
     try {
-      setLoadingModal(true);           // mostrar spinner
-      setShowVnestViewer(true);        // abrir modal de inmediato
-      setSelectedExercise(null);       // limpiar contenido previo
-  
+      setLoadingModal(true);
+      setSelectedExercise(null);
+
       const extras = await getExerciseDetails(exercise.id, exercise.terapia);
       const extra =
         Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
-  
-      setSelectedExercise({ ...exercise, ...extra }); // datos completos
+
+      setSelectedExercise({ ...exercise, ...extra });
+
+      // 👇 abrir el modal adecuado según la terapia
+      if (exercise.terapia === "VNEST") setShowVnestViewer(true);
+      else if (exercise.terapia === "SR") setShowSRViewer(true);
     } catch (err) {
       console.error("❌ Error cargando detalles del ejercicio:", err);
     } finally {
-      setLoadingModal(false);          // ocultar spinner
+      setLoadingModal(false);
     }
   };
-  
 
-  const handleCloseEditor = (updated) => {
+  const handleCloseEditor = async (updated) => {
     setShowVnestEditor(false);
     setShowSREditor(false);
     setSelectedExercise(null);
-    if (updated) console.log("✅ Ejercicio actualizado.");
+    if (updated) {
+      console.log("✅ Ejercicio actualizado.");
+      setRefreshKey((prev) => prev + 1);
+    }
   };
 
   const handleGenerateNew = () => navigate("/ejercicios/nuevo");
@@ -163,9 +172,17 @@ const EjerciciosTerapeuta = () => {
 
         {/* --- TABLA SEGÚN TERAPIA --- */}
         {activeTerapia === "VNEST" ? (
-          <VNESTTable exercises={exercises} onEdit={handleEdit} onView={handleViewExercise} />
+          <VNESTTable
+            exercises={exercises}
+            onEdit={handleEdit}
+            onView={handleViewExercise}
+          />
         ) : (
-          <SRETable exercises={exercises} onEdit={handleEdit} onView={handleViewExercise} />
+          <SRETable
+            exercises={exercises}
+            onEdit={handleEdit}
+            onView={handleViewExercise}
+          />
         )}
       </main>
 
@@ -184,11 +201,23 @@ const EjerciciosTerapeuta = () => {
         />
       )}
 
+      {/* --- Modal VNEST --- */}
       {showVnestViewer && selectedExercise && (
         <VNESTExerciseModal
           exercise={selectedExercise}
           onClose={() => {
             setShowVnestViewer(false);
+            setSelectedExercise(null);
+          }}
+        />
+      )}
+
+      {/* --- Modal SR --- */}
+      {showSRViewer && selectedExercise && (
+        <SRExerciseModal
+          exercise={selectedExercise}
+          onClose={() => {
+            setShowSRViewer(false);
             setSelectedExercise(null);
           }}
         />

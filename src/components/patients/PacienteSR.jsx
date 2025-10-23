@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import "./PacienteSR.css";
 
-const PacienteSR = ({ exercises, onEdit }) => {
+const PacienteSR = ({ exercises, onView, onEdit }) => {
   // --- ESTADO PARA FILTROS ---
   const [filterEstado, setFilterEstado] = useState("Todos");
   const [filterIdPaciente, setFilterIdPaciente] = useState("");
@@ -127,9 +127,9 @@ const PacienteSR = ({ exercises, onEdit }) => {
                   <td className="text-end">
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() => onEdit(e)}
+                      onClick={() => onView(e)}
                     >
-                      Revisar
+                      Ver
                     </button>
                   </td>
                 </tr>

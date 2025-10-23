@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { updateExercise, getExerciseDetails } from "../../services/exercisesService";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../services/firebase";
+import {
+  updateExercise,
+  getExerciseDetails,
+  updateExerciseSR,
+} from "../../services/exercisesService";
+import { FaSave, FaTimes, FaCheckCircle } from "react-icons/fa";
 import "./SREditor.css";
 
 const SREditor = ({ open, onClose, exercise }) => {
@@ -9,8 +12,9 @@ const SREditor = ({ open, onClose, exercise }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-  // 🔹 Cargar detalles desde la subcolección ejercicios_SR
+  // 🔹 Cargar detalles SR
   useEffect(() => {
     if (!exercise) return;
 
@@ -18,7 +22,8 @@ const SREditor = ({ open, onClose, exercise }) => {
       try {
         setLoading(true);
         const data = await getExerciseDetails(exercise.id, "SR");
-        const extra = Array.isArray(data) && data.length > 0 ? data[0] : data || {};
+        const extra =
+          Array.isArray(data) && data.length > 0 ? data[0] : data || {};
 
         setForm({
           pregunta: extra.pregunta || "",
@@ -36,23 +41,28 @@ const SREditor = ({ open, onClose, exercise }) => {
     loadDetails();
   }, [exercise]);
 
-  // 🔹 Guardar cambios tanto en `ejercicios` como en `ejercicios_SR`
+  // 🔹 Guardar cambios
   const handleSave = async () => {
     if (!exercise || !form) return;
     setError("");
     setSaving(true);
+    setSuccess(false);
+
     try {
-      const refSR = doc(db, "ejercicios_SR", exercise.id);
-      await updateDoc(refSR, {
-        stimulus: form.pregunta.trim(),
-        answer: form.rta_correcta.trim(),
+      await updateExerciseSR(exercise.id, {
+        pregunta: form.pregunta.trim(),
+        rta_correcta: form.rta_correcta.trim(),
       });
 
       await updateExercise(exercise.id, {
         revisado: Boolean(form.revisado),
       });
 
-      onClose(true);
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        onClose(true);
+      }, 1500);
     } catch (e) {
       console.error("Error guardando ejercicio SR:", e);
       setError(e?.message || "Error al guardar el ejercicio.");
@@ -71,13 +81,13 @@ const SREditor = ({ open, onClose, exercise }) => {
       >
         {/* === HEADER === */}
         <header className="sr-header">
-          <h4>Editar Ejercicio SR</h4>
+          <h4>🧠 Editar Ejercicio SR</h4>
           <button
             className="sr-close-btn"
             onClick={() => !saving && onClose(false)}
             aria-label="Cerrar"
           >
-            ✕
+            <FaTimes />
           </button>
         </header>
 
@@ -92,25 +102,40 @@ const SREditor = ({ open, onClose, exercise }) => {
             </div>
           ) : (
             <>
-              <div className="mb-4">
-                <div className="mb-3">
+              {/* Información contextual */}
+              <div className="sr-info-box mb-4">
+                <p>
+                  <strong>ID:</strong> {exercise.id}
+                </p>
+                <p>
+                  <strong>Paciente:</strong> {exercise.id_paciente || "—"}
+                </p>
+                <p>
+                  <strong>Tipo:</strong> {exercise.tipo || "—"}
+                </p>
+              </div>
+
+              {/* Formulario principal */}
+              <div className="sr-form">
+                <div className="form-group">
                   <label>Pregunta</label>
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="Escribe la pregunta del ejercicio"
                     value={form.pregunta}
                     onChange={(e) =>
                       setForm((p) => ({ ...p, pregunta: e.target.value }))
                     }
-                    placeholder="¿Dónde guardas la leche?"
                   />
                 </div>
 
-                <div className="mb-3">
+                <div className="form-group">
                   <label>Respuesta correcta</label>
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="Escribe la respuesta esperada"
                     value={form.rta_correcta}
                     onChange={(e) =>
                       setForm((p) => ({
@@ -118,11 +143,10 @@ const SREditor = ({ open, onClose, exercise }) => {
                         rta_correcta: e.target.value,
                       }))
                     }
-                    placeholder="En la nevera"
                   />
                 </div>
 
-                <div className="form-check mb-3">
+                <div className="form-check mb-3 mt-3">
                   <input
                     id="revisado"
                     type="checkbox"
@@ -137,7 +161,12 @@ const SREditor = ({ open, onClose, exercise }) => {
                   </label>
                 </div>
 
-                {error && <div className="alert-danger">{error}</div>}
+                {error && <div className="alert-danger mt-2">{error}</div>}
+                {success && (
+                  <div className="alert-success mt-2">
+                    <FaCheckCircle className="me-2" /> Guardado correctamente
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -154,21 +183,23 @@ const SREditor = ({ open, onClose, exercise }) => {
               Cancelar
             </button>
             <button
-              className="btn-primary"
+              className="btn-primary d-flex align-items-center gap-2"
               onClick={handleSave}
               disabled={saving}
             >
               {saving ? (
                 <>
                   <span
-                    className="spinner-border spinner-border-sm me-2"
+                    className="spinner-border spinner-border-sm"
                     role="status"
                     aria-hidden="true"
                   ></span>
                   Guardando...
                 </>
               ) : (
-                "Guardar cambios"
+                <>
+                  <FaSave /> Guardar cambios
+                </>
               )}
             </button>
           </footer>

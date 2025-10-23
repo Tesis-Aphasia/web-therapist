@@ -4,6 +4,7 @@ import Navbar from "../common/Navbar";
 import { getAssignedExercises } from "../../services/patientService";
 import { getExerciseDetails, getExerciseById } from "../../services/exercisesService";
 import VNESTExerciseModal from "../exercises/VNESTExerciseModal";
+import SRExerciseModal from "../exercises/SRExerciseModal";
 import PacientePersonalizar from "./PacientePersonalizar";
 import PatientAssignExercise from "./PatientAssignExercise";
 import PacienteVNEST from "./PacienteVNEST";
@@ -16,6 +17,7 @@ const PacienteDetail = () => {
   const [detailedExercises, setDetailedExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [showVnestViewer, setShowVnestViewer] = useState(false);
+  const [showSRViewer, setShowSRViewer] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showPersonalizeModal, setShowPersonalizeModal] = useState(false);
   const [activeTerapia, setActiveTerapia] = useState("VNEST");
@@ -75,24 +77,23 @@ const PacienteDetail = () => {
     loadDetails();
   }, [exercises]);
 
-  // === Ver ejercicio (abre VNESTExerciseModal) ===
   const handleViewExercise = async (exercise) => {
-    try {
-      const id = exercise.id_ejercicio || exercise.id;
-      const meta = await getExerciseById(id);
-      const terapia = meta?.terapia || exercise.terapia;
-
-      let extra = {};
-      if (terapia) {
-        extra = await getExerciseDetails(id, terapia);
+      try {
+        setSelectedExercise(null);
+  
+        const extras = await getExerciseDetails(exercise.id, exercise.terapia);
+        const extra =
+          Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
+  
+        setSelectedExercise({ ...exercise, ...extra });
+  
+        // 👇 abrir el modal adecuado según la terapia
+        if (exercise.terapia === "VNEST") setShowVnestViewer(true);
+        else if (exercise.terapia === "SR") setShowSRViewer(true);
+      } catch (err) {
+        console.error("❌ Error cargando detalles del ejercicio:", err);
       }
-
-      setSelectedExercise({ ...meta, ...extra, ...exercise });
-      setShowVnestViewer(true);
-    } catch (err) {
-      console.error("Error cargando ejercicio para visualizar:", err);
-    }
-  };
+    };
 
   return (
     <div className="page-container paciente-page">
@@ -143,8 +144,8 @@ const PacienteDetail = () => {
         ) : (
           <PacienteSR
             exercises={detailedExercises.filter((e) => e.terapia === "SR")}
-            onEdit={() => {}}
             onView={handleViewExercise}
+            onEdit={() => {}}
           />
         )}
 
@@ -172,6 +173,16 @@ const PacienteDetail = () => {
             exercise={selectedExercise}
             onClose={() => {
               setShowVnestViewer(false);
+              setSelectedExercise(null);
+            }}
+          />
+        )}
+
+        {showSRViewer && selectedExercise && (
+          <SRExerciseModal
+            exercise={selectedExercise}
+            onClose={() => {
+              setShowSRViewer(false);
               setSelectedExercise(null);
             }}
           />

@@ -207,6 +207,15 @@
   color: #fff;
 }
 
+.sr-page .btn-secondary {
+  background: rgba(239, 126, 6, 0.1);
+  color: var(--primary-dark);
+}
+
+.sr-page .btn-secondary:hover {
+  background: rgba(239, 126, 6, 0.2);
+}
+
 /* === TEXTO VACÍO === */
 .sr-page .text-muted {
   color: var(--muted) !important;

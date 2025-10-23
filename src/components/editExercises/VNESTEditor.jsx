@@ -5,6 +5,7 @@ import {
 } from "../../services/exercisesService";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
+import { FaSave, FaTimes, FaCheckCircle } from "react-icons/fa";
 import "./VNESTEditor.css";
 
 const NIVELES = ["fácil", "medio", "difícil"];
@@ -14,6 +15,7 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   // === Cargar detalles del ejercicio ===
   useEffect(() => {
@@ -68,26 +70,30 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
     });
   };
 
-  // === Guardar cambios ===
+  // === Guardar ===
   const handleSave = async () => {
     if (!exercise || !form) return;
     setSaving(true);
     setError("");
+    setSuccess(false);
+
     try {
-      // Actualiza en ejercicios_VNEST
       const ref = doc(db, "ejercicios_VNEST", exercise.id);
       await updateDoc(ref, {
-        verbo: form.verbo,
+        verbo: form.verbo.trim(),
         nivel: form.nivel,
-        contexto: form.contexto,
+        contexto: form.contexto.trim(),
         pares: form.pares,
         oraciones: form.oraciones,
       });
 
-      // Marca como revisado en la colección general
       await updateExercise(exercise.id, { revisado: form.revisado });
 
-      onClose(true);
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        onClose(true);
+      }, 1500);
     } catch (err) {
       console.error("❌ Error guardando VNEST:", err);
       setError("No se pudo guardar el ejercicio.");
@@ -96,32 +102,30 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
     }
   };
 
-  // === Render ===
   if (!open) return null;
 
   return (
-    <div className="vnest-overlay">
-      <div className="vnest-modal-container">
-        <header className="vnest-header sticky-top">
-          <h4>Editar Ejercicio VNeST</h4>
-          <button onClick={() => onClose(false)} className="vnest-close-btn">
-            ✕
+    <div className="vnest-overlay" onClick={() => !saving && onClose(false)}>
+      <div className="vnest-modal-container" onClick={(e) => e.stopPropagation()}>
+        <header className="vnest-header">
+          <h4>✏️ Editar Ejercicio VNeST</h4>
+          <button className="vnest-close-btn" onClick={() => onClose(false)}>
+            <FaTimes />
           </button>
         </header>
 
-        {/* === SPINNER DE CARGA === */}
         {loading || !form ? (
-          <div className="vnest-loading text-center p-5">
-            <div className="spinner-border text-warning" role="status"></div>
+          <div className="vnest-loading">
+            <div className="spinner-border" role="status"></div>
             <p className="mt-3 fw-semibold text-muted">
               Cargando datos del ejercicio...
             </p>
           </div>
         ) : (
           <>
-            <div className="vnest-body scrollable">
-              {/* Campos principales */}
-              <div className="vnest-section">
+            <div className="vnest-body">
+              {/* === CAMPOS PRINCIPALES === */}
+              <section className="vnest-section main-fields">
                 <div className="row g-3">
                   <div className="col-md-4">
                     <label>Verbo</label>
@@ -133,6 +137,7 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
                       }
                     />
                   </div>
+
                   <div className="col-md-4">
                     <label>Nivel</label>
                     <select
@@ -147,6 +152,7 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
                       ))}
                     </select>
                   </div>
+
                   <div className="col-md-4">
                     <label>Contexto</label>
                     <input
@@ -173,79 +179,91 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
                     Marcar como revisado
                   </label>
                 </div>
-              </div>
+              </section>
 
-              {/* Pares */}
-              <h5 className="section-title mt-4">Pares Sujeto - Objeto</h5>
-              {form.pares.map((p, idx) => (
-                <div key={idx} className="pair-card">
-                  <div className="row g-3 mb-2">
-                    <div className="col-md-6">
-                      <label>Sujeto</label>
-                      <input
-                        className="form-control"
-                        value={p.sujeto}
-                        onChange={(e) =>
-                          handleParChange(idx, "sujeto", e.target.value)
-                        }
-                      />
+              {/* === BLOQUE DE PARES === */}
+              <section className="vnest-section mt-4">
+                <h5 className="section-title">Pares Sujeto - Objeto</h5>
+                {form.pares.map((p, idx) => (
+                  <div key={idx} className="pair-card">
+                    <div className="pair-header">
+                      <strong>Par {idx + 1}</strong>
                     </div>
-                    <div className="col-md-6">
-                      <label>Objeto</label>
-                      <input
-                        className="form-control"
-                        value={p.objeto}
-                        onChange={(e) =>
-                          handleParChange(idx, "objeto", e.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  {["donde", "por_que", "cuando"].map((k) => (
-                    <div key={k} className="expansion-block">
-                      <label>{k.replace("_", " ").toUpperCase()}</label>
-                      {p.expansiones?.[k]?.opciones?.map((opt, i) => (
+                    <div className="row g-3 mb-2">
+                      <div className="col-md-6">
+                        <label>Sujeto</label>
                         <input
-                          key={i}
-                          className="form-control mb-1"
-                          value={opt}
+                          className="form-control"
+                          value={p.sujeto}
                           onChange={(e) =>
-                            handleExpChange(idx, k, i, e.target.value)
+                            handleParChange(idx, "sujeto", e.target.value)
                           }
                         />
-                      ))}
-                      <div className="text-muted small">
-                        Correcta:{" "}
-                        <strong>{p.expansiones?.[k]?.opcion_correcta}</strong>
+                      </div>
+                      <div className="col-md-6">
+                        <label>Objeto</label>
+                        <input
+                          className="form-control"
+                          value={p.objeto}
+                          onChange={(e) =>
+                            handleParChange(idx, "objeto", e.target.value)
+                          }
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
-              ))}
 
-              {/* Oraciones */}
-              <h5 className="section-title mt-4">Oraciones (10)</h5>
-              {form.oraciones.map((o, i) => (
-                <div key={i} className="sentence-row">
-                  <input
-                    type="checkbox"
-                    checked={o.correcta}
-                    onChange={(e) =>
-                      handleOracionChange(i, "correcta", e.target.checked)
-                    }
-                  />
-                  <input
-                    className="form-control"
-                    value={o.oracion}
-                    onChange={(e) =>
-                      handleOracionChange(i, "oracion", e.target.value)
-                    }
-                  />
-                </div>
-              ))}
+                    {["donde", "por_que", "cuando"].map((k) => (
+                      <div key={k} className="expansion-block">
+                        <label>{k.replace("_", " ").toUpperCase()}</label>
+                        {p.expansiones?.[k]?.opciones?.map((opt, i) => (
+                          <input
+                            key={i}
+                            className="form-control mb-1"
+                            value={opt}
+                            onChange={(e) =>
+                              handleExpChange(idx, k, i, e.target.value)
+                            }
+                          />
+                        ))}
+                        <small className="text-muted">
+                          Correcta:{" "}
+                          <strong>{p.expansiones?.[k]?.opcion_correcta}</strong>
+                        </small>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </section>
+
+              {/* === BLOQUE DE ORACIONES === */}
+              <section className="vnest-section mt-4">
+                <h5 className="section-title">Oraciones</h5>
+                {form.oraciones.map((o, i) => (
+                  <div key={i} className="sentence-row">
+                    <input
+                      type="checkbox"
+                      checked={o.correcta}
+                      onChange={(e) =>
+                        handleOracionChange(i, "correcta", e.target.checked)
+                      }
+                    />
+                    <input
+                      className="form-control"
+                      value={o.oracion}
+                      onChange={(e) =>
+                        handleOracionChange(i, "oracion", e.target.value)
+                      }
+                    />
+                  </div>
+                ))}
+              </section>
 
               {error && <div className="alert alert-danger mt-3">{error}</div>}
+              {success && (
+                <div className="alert alert-success mt-3 d-flex align-items-center gap-2">
+                  <FaCheckCircle /> Cambios guardados correctamente
+                </div>
+              )}
             </div>
 
             <footer className="vnest-footer">
@@ -257,11 +275,23 @@ const VNESTEditor = ({ open, onClose, exercise }) => {
                 Cancelar
               </button>
               <button
-                className="btn btn-primary"
+                className="btn btn-primary d-flex align-items-center gap-2"
                 onClick={handleSave}
                 disabled={saving}
               >
-                {saving ? "Guardando..." : "Guardar cambios"}
+                {saving ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                    ></span>
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <FaSave /> Guardar cambios
+                  </>
+                )}
               </button>
             </footer>
           </>
