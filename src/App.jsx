@@ -8,20 +8,30 @@ import EjerciciosTerapeuta from "./components/exercises/EjerciciosTerapeuta";
 import SelectExerciseType from "./components/addExercise/SelectExerciseType";
 import AddExerciseIA from "./components/addExercise/AddExerciseIA";
 import PacienteDetail from "./components/patients/PacienteDetail";
+import TerapeutaRegistro from "./components/login/TerapeutaRegistro";
 
+// 🔹 nuevos componentes del admin
+import AdminLogin from "./components/admin/AdminLogin";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
   return (
     <Routes>
+      {/* === TERAPEUTA === */}
       <Route path="/" element={<TerapeutaLogin />} />
+      <Route path="/registro" element={<TerapeutaRegistro />} />
       <Route path="/dashboard" element={<DashboardTerapeuta />} />
       <Route path="/pacientes" element={<PacientesTerapeuta />} />
+      <Route path="/pacientes/:pacienteId" element={<PacienteDetail />} />
       <Route path="/ejercicios" element={<EjerciciosTerapeuta />} />
       <Route path="/ejercicios/nuevo" element={<SelectExerciseType />} />
       <Route path="/ejercicios/nuevo/ia" element={<AddExerciseIA />} />
-      <Route path="/pacientes/:pacienteId" element={<PacienteDetail />} />
-      {/* <Route path="/ejercicios/nuevo/manual" element={<div>Crear manual (próximamente)</div>} /> */}
-      {/* fallback */}
+
+      {/* === ADMIN === */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+      {/* === DEFAULT === */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

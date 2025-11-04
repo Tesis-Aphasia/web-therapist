@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginTherapist } from "../../services/therapistService";
+import { loginTherapist, resetTherapistPassword } from "../../services/therapistService";
 import "./TerapeutaLogin.css";
 
 const TerapeutaLogin = () => {
@@ -9,6 +9,9 @@ const TerapeutaLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,13 +19,16 @@ const TerapeutaLogin = () => {
     setLoading(true);
 
     try {
-      const isValid = await loginTherapist(email, password);
-      if (!isValid) {
+      const result = await loginTherapist(email, password);
+      if (!result.success) {
         setError("Credenciales incorrectas. Verifica tu email o contraseña.");
         setLoading(false);
         return;
       }
+
       localStorage.setItem("terapeutaEmail", email);
+      localStorage.setItem("terapeutaUID", result.user.uid);
+      if (result.data) localStorage.setItem("terapeutaData", JSON.stringify(result.data));
       navigate("/dashboard");
     } catch (err) {
       console.error("Error en login:", err);
@@ -32,13 +38,26 @@ const TerapeutaLogin = () => {
     }
   };
 
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    setResetMessage("");
+    const res = await resetTherapistPassword(resetEmail);
+    if (res.success) {
+      setResetMessage("✅ Te hemos enviado un correo para restablecer tu contraseña.");
+    } else {
+      setResetMessage("⚠️ No se pudo enviar el correo. Verifica el email o intenta más tarde.");
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="gradient-bg" />
-      <div className="login-card">
+      <div className="login-card fade-in">
         <div className="text-center mb-4">
           <h1 className="fw-bold text-dark fs-3 mb-1">Dashboard Terapeuta</h1>
-          <p className="text-muted small">Bienvenido a <strong>Rehabilita</strong></p>
+          <p className="text-muted small">
+            Bienvenido a <strong>Rehabilita</strong>
+          </p>
         </div>
 
         <form onSubmit={handleLogin}>
@@ -75,14 +94,17 @@ const TerapeutaLogin = () => {
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="d-flex justify-content-end mb-3">
-            <a href="#" className="forgot-link small">¿Olvidaste tu contraseña?</a>
+            <button
+              type="button"
+              className="forgot-link small"
+              onClick={() => setShowReset(true)}
+              style={{ background: "none", border: "none", color: "#ef7e06", cursor: "pointer" }}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
           </div>
 
-          <button
-            type="submit"
-            className="btn-login"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-login" disabled={loading}>
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2"></span>
@@ -92,8 +114,56 @@ const TerapeutaLogin = () => {
               "Iniciar sesión"
             )}
           </button>
+
+          <div className="text-center mt-4">
+            <p className="small text-muted">
+              ¿No tienes una cuenta?{" "}
+              <button
+                type="button"
+                className="forgot-link fw-semibold"
+                onClick={() => navigate("/registro")}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                Regístrate aquí
+              </button>
+            </p>
+          </div>
         </form>
       </div>
+
+      {/* 🔹 Modal de restablecimiento */}
+      {showReset && (
+        <div className="reset-overlay">
+          <div className="reset-modal fade-in">
+            <h3>Restablecer contraseña</h3>
+            <p className="small text-muted">
+              Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.
+            </p>
+            <form onSubmit={handlePasswordReset}>
+              <input
+                type="email"
+                placeholder="tu@email.com"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+              />
+              <button type="submit" className="btn-login mt-2">Enviar correo</button>
+            </form>
+            {resetMessage && <p className="small mt-2">{resetMessage}</p>}
+            <button
+              className="close-btn"
+              onClick={() => setShowReset(false)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

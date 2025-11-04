@@ -1,19 +1,29 @@
 import { doc, getDoc, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { auth, db } from "./firebase";
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp  } from "firebase/firestore";
+import { signInWithEmailAndPassword,  sendPasswordResetEmail   } from "firebase/auth";
 
 
 export async function loginTherapist(email, password) {
   try {
+    // 1️⃣ Autenticar con Firebase Auth
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // 2️⃣ Obtener datos adicionales del terapeuta desde Firestore
     const ref = doc(db, "terapeutas", email);
     const snap = await getDoc(ref);
 
-    if (!snap.exists()) return false;
-    const data = snap.data();
-    return data.password === password;
+    if (!snap.exists()) {
+      console.warn("El terapeuta no tiene datos adicionales en Firestore.");
+      return { success: true, user, data: null };
+    }
+
+    // 3️⃣ Retornar datos del usuario autenticado + info del terapeuta
+    return { success: true, user, data: { id: snap.id, ...snap.data() } };
   } catch (err) {
-    console.error("Error al verificar terapeuta:", err);
-    throw err;
+    console.error("Error al iniciar sesión:", err);
+    return { success: false, error: err.message };
   }
 }
 
@@ -124,5 +134,27 @@ export async function getTherapistProfile(email) {
   } catch (err) {
     console.error("Error obteniendo perfil del terapeuta:", err);
     throw err;
+  }
+}
+
+export const sendTherapistRequest = async (data) => {
+  const solicitudesRef = collection(db, "solicitudes");
+  await addDoc(solicitudesRef, {
+    ...data,
+    estado: "pendiente",
+    fecha: serverTimestamp(),
+  });
+};
+
+export async function resetTherapistPassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email, {
+      url: "http://localhost:5173/terapeuta/login", // redirige después del reset
+      handleCodeInApp: true,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error enviando correo de recuperación:", error);
+    return { success: false, message: error.message };
   }
 }

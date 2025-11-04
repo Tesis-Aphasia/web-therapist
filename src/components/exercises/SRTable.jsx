@@ -86,7 +86,7 @@ const SRTable = ({ exercises, onEdit, onView }) => { // 👈 añadimos onView
                 <th>Asignado a</th>
                 <th>Pregunta</th>
                 <th>Respuesta</th>
-                <th>Estado</th>
+                <th>Revisado</th>
                 <th className="text-end">Acción</th>
               </tr>
             </thead>
@@ -106,10 +106,10 @@ const SRTable = ({ exercises, onEdit, onView }) => { // 👈 añadimos onView
                     <td>{e.rta_correcta || "—"}</td>
                     <td>
                       {e.revisado ? (
-                        <span className="badge bg-success">Aprobado</span>
+                        <span className="badge bg-success">Revisado</span>
                       ) : (
                         <span className="badge bg-warning text-dark">
-                          Pendiente
+                          Por Revisar
                         </span>
                       )}
                     </td>

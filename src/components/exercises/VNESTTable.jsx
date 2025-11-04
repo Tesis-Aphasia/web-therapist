@@ -215,10 +215,10 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
                   <td>{e.id_paciente || "—"}</td>
                   <td>
                     {e.revisado ? (
-                      <span className="badge bg-success">Aprobado</span>
+                      <span className="badge bg-success">Revisado</span>
                     ) : (
                       <span className="badge bg-warning text-dark">
-                        Pendiente
+                        Por Revisar
                       </span>
                     )}
                   </td>
