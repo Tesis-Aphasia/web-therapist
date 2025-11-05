@@ -32,7 +32,7 @@ const Navbar = ({ active }) => {
           className="navbar-logo"
           onClick={() => navigate("/dashboard")}
         >
-          <span className="logo-accent">Rehabi</span>lita
+          <span className="logo-accent">Rehabi</span>litia
         </div>
 
         {/* MENÚ */}

@@ -156,13 +156,11 @@ const PacienteDetail = () => {
           <PacienteVNEST
             exercises={detailedExercises.filter((e) => e.terapia === "VNEST")}
             onView={handleViewExercise}
-            onEdit={() => {}}
           />
         ) : (
           <PacienteSR
             exercises={detailedExercises.filter((e) => e.terapia === "SR")}
             onView={handleViewExercise}
-            onEdit={() => {}}
           />
         )}
 

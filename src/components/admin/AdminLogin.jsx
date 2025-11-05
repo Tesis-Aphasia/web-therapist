@@ -35,7 +35,7 @@ const AdminLogin = () => {
     <div className="admin-login-page">
       <div className="admin-login-card fade-in">
         <div className="login-header">
-          <h1>Rehabilita</h1>
+          <h1>Rehabilitia</h1>
           <p className="subtitle">Panel de Administración</p>
         </div>
 
@@ -75,7 +75,7 @@ const AdminLogin = () => {
           </button>
         </form>
 
-        <p className="login-footer">© {new Date().getFullYear()} Rehabilita · Admin</p>
+        <p className="login-footer">© {new Date().getFullYear()} Rehabilitia · Admin</p>
       </div>
     </div>
   );

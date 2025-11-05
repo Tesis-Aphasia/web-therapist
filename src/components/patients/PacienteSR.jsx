@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import "./PacienteSR.css";
 
-const PacienteSR = ({ exercises, onView, onEdit }) => {
+const PacienteSR = ({ exercises, onView }) => {
   // --- ESTADO PARA FILTROS ---
   const [filterEstado, setFilterEstado] = useState("Todos");
   const [filterPregunta, setFilterPregunta] = useState("");

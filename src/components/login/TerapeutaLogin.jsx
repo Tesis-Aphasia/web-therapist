@@ -56,7 +56,7 @@ const TerapeutaLogin = () => {
         <div className="text-center mb-4">
           <h1 className="fw-bold text-dark fs-3 mb-1">Dashboard Terapeuta</h1>
           <p className="text-muted small">
-            Bienvenido a <strong>Rehabilita</strong>
+            Bienvenido a <strong>Rehabilitia</strong>
           </p>
         </div>
 
