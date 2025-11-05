@@ -1,34 +1,41 @@
 import React, { useState } from "react";
 import {
-  getPatientById,
   assignPatientToTherapist,
 } from "../../services/patientService";
+import { db } from "../../services/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import "./AddPatient.css";
 
-const AddPatient = ({ open, onClose, terapeutaEmail }) => {
+const AddPatient = ({ open, onClose, terapeutaId }) => {  // 👈 antes terapeutaEmail
   const [searchId, setSearchId] = useState("");
   const [paciente, setPaciente] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  // 🔹 Buscar paciente
+  // 🔹 Buscar paciente por email (pero devolviendo su UID)
   const handleSearch = async () => {
     setError("");
     setSuccess("");
     setPaciente(null);
 
-    if (!searchId.trim()) return setError("Por favor ingresa un ID válido.");
+    if (!searchId.trim()) return setError("Por favor ingresa un email válido.");
     setLoading(true);
 
     try {
-      const result = await getPatientById(searchId.trim());
-      if (!result) {
-        setError("No se encontró ningún paciente con ese ID.");
+      // 🔍 Buscar documento donde el campo "email" coincida
+      const pacientesRef = collection(db, "pacientes");
+      const q = query(pacientesRef, where("email", "==", searchId.trim()));
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        setError("No se encontró ningún paciente con ese correo.");
       } else {
-        setPaciente(result);
+        const doc = snap.docs[0];
+        setPaciente({ id: doc.id, ...doc.data() }); // id = UID real del paciente
       }
-    } catch {
+    } catch (e) {
+      console.error("Error al buscar el paciente:", e);
       setError("Error al buscar el paciente.");
     } finally {
       setLoading(false);
@@ -43,12 +50,11 @@ const AddPatient = ({ open, onClose, terapeutaEmail }) => {
     setSuccess("");
 
     try {
-      await assignPatientToTherapist(paciente.id, terapeutaEmail);
-      setSuccess(`✅ Paciente ${paciente.nombre} asignado con éxito.`);
-      setTimeout(() => {
-        onClose(true);
-      }, 1200);
-    } catch {
+      await assignPatientToTherapist(paciente.id, terapeutaId); // 👈 usa UID del terapeuta
+      setSuccess(`✅ Paciente ${paciente.nombre || paciente.email} asignado con éxito.`);
+      setTimeout(() => onClose(true), 1200);
+    } catch (e) {
+      console.error("Error al asignar paciente:", e);
       setError("Error al asignar el paciente.");
     } finally {
       setLoading(false);
@@ -69,14 +75,14 @@ const AddPatient = ({ open, onClose, terapeutaEmail }) => {
 
         <main className="addpatient-body">
           <p className="text-muted small">
-            Busca un paciente existente por su <strong>ID</strong> y asígnalo a tu lista.
+            Busca un paciente existente por su <strong>email</strong> y asígnalo a tu lista.
           </p>
 
           <div className="search-row">
             <input
               type="text"
               className="form-control"
-              placeholder="ID del paciente (ej. paciente_123)"
+              placeholder="Correo del paciente (ej. paciente@example.com)"
               value={searchId}
               onChange={(e) => setSearchId(e.target.value)}
             />
@@ -101,7 +107,7 @@ const AddPatient = ({ open, onClose, terapeutaEmail }) => {
                 <strong>Email:</strong> {paciente.email || "—"}
               </p>
               <p className="mb-1">
-                <strong>Nombre:</strong> {paciente.nombre || "—"}
+                <strong>Ciudad:</strong> {paciente.ciudad_residencia || "—"}
               </p>
               <p className="mb-3">
                 <strong>Terapeuta actual:</strong>{" "}

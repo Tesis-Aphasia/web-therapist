@@ -1,4 +1,3 @@
-// EjerciciosTerapeuta.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../common/Navbar";
@@ -6,12 +5,14 @@ import {
   getVisibleExercises,
   getExerciseDetails,
 } from "../../services/exercisesService";
+import { getPatientById } from "../../services/patientService";
 import VNESTTable from "./VNESTTable";
 import SRETable from "./SRTable";
 import ExerciseEditor from "../editExercises/VNESTEditor";
 import SREditor from "../editExercises/SREditor";
 import VNESTExerciseModal from "./VNESTExerciseModal";
 import SRExerciseModal from "./SRExerciseModal";
+import { auth } from "../../services/firebase";
 
 import "./EjerciciosTerapeuta.css";
 
@@ -25,19 +26,21 @@ const EjerciciosTerapeuta = () => {
   const [activeTerapia, setActiveTerapia] = useState("VNEST");
   const [loadingModal, setLoadingModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const therapistEmail = localStorage.getItem("terapeutaEmail");
+  const [therapistId, setTherapistId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!therapistEmail) return;
+    const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+      if (!user) return navigate("/");
 
-    let unsubscribeFn = null;
+      setTherapistId(user.uid);
 
-    (async () => {
-      unsubscribeFn = await getVisibleExercises(
-        therapistEmail,
+      // 🔹 Obtener ejercicios visibles para este terapeuta
+      const unsubscribeExercises = await getVisibleExercises(
+        user.uid, // ✅ ahora pasamos el UID
         async (visibleExercises) => {
           setExercises(visibleExercises);
+
           const detailedResults = await Promise.allSettled(
             visibleExercises.map(async (e) => {
               try {
@@ -47,18 +50,33 @@ const EjerciciosTerapeuta = () => {
                     ? extras[0]
                     : extras || {};
 
+                let patientEmail = null;
+                let patientName = null;
+
+                if (e.id_paciente) {
+                  const patient = await getPatientById(e.id_paciente);
+                  if (patient) {
+                    patientEmail = patient.email || null;
+                    patientName = patient.nombre || null;
+                  }
+                }
+
                 if (e.terapia === "VNEST") {
                   return {
                     ...e,
                     contexto: extra.contexto ?? e.contexto,
                     verbo: extra.verbo ?? e.verbo,
                     nivel: extra.nivel ?? e.nivel,
+                    pacienteEmail: patientEmail,
+                    pacienteNombre: patientName,
                   };
                 } else if (e.terapia === "SR") {
                   return {
                     ...e,
                     pregunta: extra.pregunta ?? e.pregunta,
                     rta_correcta: extra.rta_correcta ?? e.rta_correcta,
+                    pacienteEmail: patientEmail,
+                    pacienteNombre: patientName,
                   };
                 }
 
@@ -70,41 +88,39 @@ const EjerciciosTerapeuta = () => {
             })
           );
 
-          // Filtrar los que se resolvieron correctamente
           const fulfilled = detailedResults
             .filter((r) => r.status === "fulfilled")
             .map((r) => r.value);
 
-          // Actualizar con los detalles finales
           setExercises(fulfilled);
-
           console.log("✅ Ejercicios visibles actualizados:", fulfilled);
         }
       );
-    })();
 
-    return () => {
-      if (unsubscribeFn) unsubscribeFn();
-    };
-  }, [therapistEmail, refreshKey]);
+      // Cleanup
+      return () => unsubscribeExercises && unsubscribeExercises();
+    });
+
+    return () => unsubscribeAuth();
+  }, [navigate, refreshKey]);
 
   const handleEdit = async (exercise) => {
     try {
-      setLoadingModal(true); // mostrar spinner
-      setSelectedExercise(null); // limpiar datos anteriores
+      setLoadingModal(true);
+      setSelectedExercise(null);
 
       const extras = await getExerciseDetails(exercise.id, exercise.terapia);
       const extra =
         Array.isArray(extras) && extras.length > 0 ? extras[0] : extras || {};
 
-      setSelectedExercise({ ...exercise, ...extra }); // cargar detalles
+      setSelectedExercise({ ...exercise, ...extra });
 
       if (exercise.terapia === "SR") setShowSREditor(true);
       else setShowVnestEditor(true);
     } catch (err) {
       console.error("❌ Error cargando detalles:", err);
     } finally {
-      setLoadingModal(false); // ocultar spinner
+      setLoadingModal(false);
     }
   };
 
@@ -119,7 +135,6 @@ const EjerciciosTerapeuta = () => {
 
       setSelectedExercise({ ...exercise, ...extra });
 
-      // 👇 abrir el modal adecuado según la terapia
       if (exercise.terapia === "VNEST") setShowVnestViewer(true);
       else if (exercise.terapia === "SR") setShowSRViewer(true);
     } catch (err) {
@@ -150,12 +165,12 @@ const EjerciciosTerapeuta = () => {
           <button
             onClick={handleGenerateNew}
             className="btn btn-primary fw-semibold d-flex align-items-center gap-2"
+            disabled={!therapistId}
           >
             <i className="bi bi-plus-lg"></i> Nuevo ejercicio
           </button>
         </div>
 
-        {/* --- FILTRO DE TERAPIAS --- */}
         <div className="terapia-tabs mb-4">
           {["VNEST", "SR"].map((terapia) => (
             <button
@@ -170,7 +185,6 @@ const EjerciciosTerapeuta = () => {
           ))}
         </div>
 
-        {/* --- TABLA SEGÚN TERAPIA --- */}
         {activeTerapia === "VNEST" ? (
           <VNESTTable
             exercises={exercises}
@@ -201,7 +215,6 @@ const EjerciciosTerapeuta = () => {
         />
       )}
 
-      {/* --- Modal VNEST --- */}
       {showVnestViewer && selectedExercise && (
         <VNESTExerciseModal
           exercise={selectedExercise}
@@ -212,7 +225,6 @@ const EjerciciosTerapeuta = () => {
         />
       )}
 
-      {/* --- Modal SR --- */}
       {showSRViewer && selectedExercise && (
         <SRExerciseModal
           exercise={selectedExercise}

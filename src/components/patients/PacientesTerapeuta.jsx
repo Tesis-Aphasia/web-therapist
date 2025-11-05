@@ -4,10 +4,11 @@ import Navbar from "../common/Navbar";
 import { getPatientsByTherapist } from "../../services/therapistService";
 import AddPatient from "../addPatient/AddPatient";
 import "./PacientesTerapeuta.css";
+import { auth } from "../../services/firebase";
 
 const PacientesTerapeuta = () => {
   const navigate = useNavigate();
-  const [terapeutaEmail] = useState(localStorage.getItem("terapeutaEmail"));
+  const [terapeutaId, setTerapeutaId] = useState(null); // 👈 UID en vez de email
   const [pacientes, setPacientes] = useState([]);
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -17,13 +18,22 @@ const PacientesTerapeuta = () => {
   const perPage = 10;
 
   useEffect(() => {
-    if (!terapeutaEmail) {
-      navigate("/");
-      return;
-    }
-    const unsubscribe = getPatientsByTherapist(terapeutaEmail, setPacientes);
-    return () => unsubscribe && unsubscribe();
-  }, [terapeutaEmail, navigate]);
+    // Espera que FirebaseAuth esté listo
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        navigate("/");
+        return;
+      }
+
+      setTerapeutaId(user.uid); // 👈 ahora trabajamos con el UID del terapeuta
+
+      // 🔹 Escucha pacientes del terapeuta (por UID)
+      const unsubscribePatients = getPatientsByTherapist(user.uid, setPacientes);
+      return () => unsubscribePatients && unsubscribePatients();
+    });
+
+    return () => unsubscribeAuth();
+  }, [navigate]);
 
   const filteredPatients = pacientes.filter((p) =>
     p.email?.toLowerCase().includes(search.toLowerCase())
@@ -31,10 +41,7 @@ const PacientesTerapeuta = () => {
 
   const totalPages = Math.ceil(filteredPatients.length / perPage);
   const startIndex = (currentPage - 1) * perPage;
-  const currentPatients = filteredPatients.slice(
-    startIndex,
-    startIndex + perPage
-  );
+  const currentPatients = filteredPatients.slice(startIndex, startIndex + perPage);
 
   const handlePrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -43,8 +50,8 @@ const PacientesTerapeuta = () => {
     <div className="page-container patients-page">
       <Navbar active="pacientes" />
 
-    <main className="container py-5 mt-5">
-        {/* Encabezado Moderno */}
+      <main className="container py-5 mt-5">
+        {/* Encabezado */}
         <div className="patients-topbar">
           <h2 className="page-title">Pacientes</h2>
           <div className="patients-actions">
@@ -61,6 +68,7 @@ const PacientesTerapeuta = () => {
             <button
               className="btn btn-primary fw-semibold d-flex align-items-center gap-2"
               onClick={() => setShowAddModal(true)}
+              disabled={!terapeutaId}
             >
               + Agregar Paciente
             </button>
@@ -90,11 +98,7 @@ const PacientesTerapeuta = () => {
                   <tr key={p.id}>
                     <td>{p.nombre || "—"}</td>
                     <td>{p.email || "—"}</td>
-                    <td>
-                      
-                        {p.cantidadEjercicios ?? 0}
-                      
-                    </td>
+                    <td>{p.cantidadEjercicios ?? 0}</td>
                     <td className="text-end">
                       <button
                         className="btn btn-sm btn-secondary"
@@ -112,35 +116,35 @@ const PacientesTerapeuta = () => {
 
         {/* Paginación */}
         {totalPages > 1 && (
-        <div className="pagination-bar">
-          <span>
-            Página {currentPage} de {totalPages}
-          </span>
-          <div className="btn-group">
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={handlePrev}
-              disabled={currentPage === 1}
-            >
-              ◀
-            </button>
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-            >
-              ▶
-            </button>
+          <div className="pagination-bar">
+            <span>
+              Página {currentPage} de {totalPages}
+            </span>
+            <div className="btn-group">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handlePrev}
+                disabled={currentPage === 1}
+              >
+                ◀
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+              >
+                ▶
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
         {/* Modal agregar paciente */}
-        {showAddModal && (
+        {showAddModal && terapeutaId && (
           <AddPatient
             open={showAddModal}
             onClose={() => setShowAddModal(false)}
-            terapeutaEmail={terapeutaEmail}
+            terapeutaId={terapeutaId} // 👈 ahora le pasa el UID real
           />
         )}
       </main>

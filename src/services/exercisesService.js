@@ -25,11 +25,11 @@ export function getAllExercises(callback) {
   return unsubscribe;
 }
 
-export async function getVisibleExercisesOnce(therapistEmail) {
+export async function getVisibleExercisesOnce(therapistId) {
   try {
     // 1️⃣ Obtener IDs (emails o algo identificador) de los pacientes del terapeuta
     const pacientesRef = collection(db, "pacientes");
-    const pacientesQuery = query(pacientesRef, where("terapeuta", "==", therapistEmail));
+    const pacientesQuery = query(pacientesRef, where("terapeuta", "==", therapistId));
     const pacientesSnap = await getDocs(pacientesQuery);
     const patientIds = pacientesSnap.docs.map((doc) => doc.id);
 
@@ -44,7 +44,7 @@ export async function getVisibleExercisesOnce(therapistEmail) {
     // 3️⃣ Filtrar según visibilidad
     const visibleExercises = allExercises.filter((e) => {
       if (e.tipo === "publico") return true;
-      if (e.tipo === "privado" && e.creado_por === therapistEmail && !patientIds.includes(e.id_paciente)) return true;
+      if (e.tipo === "privado" && e.creado_por === therapistId && !patientIds.includes(e.id_paciente)) return true;
       return false;
     });
 
@@ -55,11 +55,11 @@ export async function getVisibleExercisesOnce(therapistEmail) {
   }
 }
 
-export async function getVisibleExercises(therapistEmail, callback) {
+export async function getVisibleExercises(therapistId, callback) {
   try {
     // 1️⃣ Obtener IDs (emails o algo identificador) de los pacientes del terapeuta
     const pacientesRef = collection(db, "pacientes");
-    const pacientesQuery = query(pacientesRef, where("terapeuta", "==", therapistEmail));
+    const pacientesQuery = query(pacientesRef, where("terapeuta", "==", therapistId));
     const pacientesSnap = await getDocs(pacientesQuery);
     const patientIds = pacientesSnap.docs.map((doc) => doc.id); // puedes usar .email si ese es el campo correcto
 
@@ -76,7 +76,7 @@ export async function getVisibleExercises(therapistEmail, callback) {
       // 3️⃣ Filtrar según visibilidad
       const visibleExercises = allExercises.filter((e) => {
         if (e.tipo === "publico") return true;
-        if (e.tipo === "privado" && e.creado_por === therapistEmail) return true;
+        if (e.tipo === "privado" && e.creado_por === therapistId) return true;
         if (e.tipo === "privado" && patientIds.includes(e.creado_por)) return true;
         if (e.tipo === "privado" && patientIds.includes(e.id_paciente)) return true;
         return false;

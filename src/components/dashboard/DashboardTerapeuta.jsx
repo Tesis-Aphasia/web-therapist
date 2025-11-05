@@ -15,27 +15,30 @@ const DashboardTerapeuta = () => {
   const [numPendientes, setNumPendientes] = useState(0);
 
   useEffect(() => {
-    const email = localStorage.getItem("terapeutaEmail");
-    if (!email) {
-      navigate("/");
-      return;
-    }
+  const uid = localStorage.getItem("terapeutaUID");
+  if (!uid) {
+    navigate("/");
+    return;
+  }
 
-    getTherapistData(email).then((data) => setTerapeuta(data));
+  // 🔹 Cargar datos del terapeuta
+  getTherapistData(uid).then((data) => setTerapeuta(data));
 
-    let unsubEjercicios;
-    const unsubPacientes = subscribeAssignedPatients(email, setNumPacientes);
+  // 🔹 Suscripciones en tiempo real
+  let unsubEjercicios;
+  const unsubPacientes = subscribeAssignedPatients(uid, setNumPacientes);
 
-    async function subscribeEjercicios() {
-      unsubEjercicios = await subscribePendingVisibleExercises(email, setNumPendientes);
-    }
-    subscribeEjercicios();
+  async function subscribeEjercicios() {
+    unsubEjercicios = await subscribePendingVisibleExercises(uid, setNumPendientes);
+  }
+  subscribeEjercicios();
 
-    return () => {
-      unsubPacientes && unsubPacientes();
-      unsubEjercicios && unsubEjercicios();
-    };
-  }, [navigate]);
+  return () => {
+    unsubPacientes && unsubPacientes();
+    unsubEjercicios && unsubEjercicios();
+  };
+}, [navigate]);
+
 
   return (
     <div className="page-container">

@@ -4,7 +4,7 @@ import "./PacienteSR.css";
 const PacienteSR = ({ exercises, onView, onEdit }) => {
   // --- ESTADO PARA FILTROS ---
   const [filterEstado, setFilterEstado] = useState("Todos");
-  const [filterIdPaciente, setFilterIdPaciente] = useState("");
+  const [filterPregunta, setFilterPregunta] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -12,7 +12,7 @@ const PacienteSR = ({ exercises, onView, onEdit }) => {
     // --- LIMPIAR FILTROS ---
     const clearFilters = () => {
       setFilterEstado("Todos");
-      setFilterIdPaciente("");
+      setFilterPregunta("");
       setCurrentPage(1);
     };
   // --- FILTRADO ---
@@ -21,17 +21,14 @@ const PacienteSR = ({ exercises, onView, onEdit }) => {
       .filter((e) => e.terapia === "SR")
       .filter((e) => {
         if (filterEstado !== "Todos") {
-          if (filterEstado === "Aprobado" && !e.revisado) return false;
+          if (filterEstado === "Completado" && !e.revisado) return false;
           if (filterEstado === "Pendiente" && e.revisado) return false;
         }
-        if (
-          filterIdPaciente &&
-          !e.id_paciente?.toString().includes(filterIdPaciente)
-        )
+        if (filterPregunta && !e.pregunta?.toLowerCase().includes(filterPregunta.toLowerCase()))
           return false;
         return true;
       });
-      }, [exercises, filterEstado, filterIdPaciente]);
+      }, [exercises, filterEstado, filterPregunta]);
 
   // --- PAGINACIÓN ---
   const totalPages = Math.ceil(filteredExercises.length / pageSize);
@@ -60,22 +57,22 @@ const PacienteSR = ({ exercises, onView, onEdit }) => {
               onChange={(e) => setFilterEstado(e.target.value)}
             >
               <option>Todos</option>
-              <option>Aprobado</option>
+              <option>Completado</option>
               <option>Pendiente</option>
             </select>
           </div>
 
 
+          {/* Filtro por pregunta */}
           <div className="filter-group">
-            <label>ID Paciente:</label>
+            <label>Pregunta:</label>
             <input
               type="text"
-              placeholder="Buscar ID paciente"
-              value={filterIdPaciente}
-              onChange={(e) => setFilterIdPaciente(e.target.value)}
+              placeholder="Buscar pregunta"
+              value={filterPregunta}
+              onChange={(e) => setFilterPregunta(e.target.value)}
             />
           </div>
-        
 
         {/* Botón limpiar */}
         <button
@@ -93,7 +90,6 @@ const PacienteSR = ({ exercises, onView, onEdit }) => {
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Asignado a</th>
               <th>Pregunta</th>
               <th>Respuesta</th>
               <th>Estado</th>
@@ -112,7 +108,6 @@ const PacienteSR = ({ exercises, onView, onEdit }) => {
               paginatedExercises.map((e) => (
                 <tr key={e.id}>
                   <td>{e.id}</td>
-                  <td>{e.id_paciente || "—"}</td>
                   <td>{e.pregunta || "—"}</td>
                   <td>{e.rta_correcta || "—"}</td>
                   <td>

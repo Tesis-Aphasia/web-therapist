@@ -1,4 +1,6 @@
-import React from "react";
+
+import { getPatientById } from "../../services/patientService";
+import React, { useEffect, useState } from "react";
 import {
   FaQuestionCircle,
   FaClock,
@@ -11,6 +13,24 @@ import {
 import "./SRExerciseModal.css";
 
 const SRExerciseModal = ({ exercise, onClose }) => {
+  const [patientName, setPatientName] = useState("—");
+
+   useEffect(() => {
+    const fetchPatientData = async () => {
+      if (!exercise?.id_paciente) return;
+      try {
+        const patient = await getPatientById(exercise.id_paciente);
+        if (patient) {
+          setPatientName(patient.nombre || patient.email || "Sin nombre");
+        }
+      } catch (err) {
+        console.error("Error obteniendo paciente:", err);
+      }
+    };
+
+    fetchPatientData();
+  }, [exercise?.id_paciente]);
+
   const formatTime = (ms) => {
     if (!ms) return "—";
     const date = new Date(ms);
@@ -124,7 +144,7 @@ const SRExerciseModal = ({ exercise, onClose }) => {
                 <strong>Creado por:</strong> {exercise.creado_por || "—"}
               </p>
               <p>
-                <strong>Paciente:</strong> {exercise.id_paciente || "—"}
+                <strong>Paciente:</strong> {patientName}
               </p>
               <p>
                 <strong>Tipo:</strong> {exercise.tipo || "—"}

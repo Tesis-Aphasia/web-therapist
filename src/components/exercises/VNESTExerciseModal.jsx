@@ -1,13 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   FaUser,
   FaBookOpen,
   FaCheckCircle,
   FaTimesCircle,
 } from "react-icons/fa";
+import { getPatientById } from "../../services/patientService";
 import "./VNESTExerciseModal.css";
 
 const VNESTExerciseModal = ({ exercise, onClose }) => {
+  const [patientName, setPatientName] = useState("—");
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      if (!exercise?.id_paciente) return;
+      try {
+        const patient = await getPatientById(exercise.id_paciente);
+        if (patient) {
+          setPatientName(patient.nombre || patient.email || "Sin nombre");
+        }
+      } catch (err) {
+        console.error("Error obteniendo paciente:", err);
+      }
+    };
+
+    fetchPatientData();
+  }, [exercise?.id_paciente]);
+
   return (
     <div className="vnest-modal-backdrop" onClick={onClose}>
       <div className="vnest-modal" onClick={(e) => e.stopPropagation()}>
@@ -61,7 +81,7 @@ const VNESTExerciseModal = ({ exercise, onClose }) => {
                 <strong>Creado por:</strong> {exercise.creado_por || "—"}
               </p>
               <p>
-                <strong>Paciente:</strong> {exercise.id_paciente || "—"}
+                <strong>Paciente:</strong> {patientName}
               </p>
             </section>
 

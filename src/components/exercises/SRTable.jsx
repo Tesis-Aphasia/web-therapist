@@ -101,7 +101,7 @@ const SRTable = ({ exercises, onEdit, onView }) => { // 👈 añadimos onView
                 paginatedExercises.map((e) => (
                   <tr key={e.id}>
                     <td>{e.id}</td>
-                    <td>{e.id_paciente || "—"}</td>
+                    <td>{e.pacienteEmail || "—"}</td>
                     <td>{e.pregunta || "—"}</td>
                     <td>{e.rta_correcta || "—"}</td>
                     <td>

@@ -82,7 +82,6 @@ const PacienteVnest = ({ exercises, onView }) => {
             >
               <option>Todos</option>
               <option>Pendiente</option>
-              <option>En progreso</option>
               <option>Completado</option>
             </select>
           </div>

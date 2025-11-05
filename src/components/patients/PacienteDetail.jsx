@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../common/Navbar";
-import { getAssignedExercises } from "../../services/patientService";
+import { getAssignedExercises, getPatientById } from "../../services/patientService";
 import { getExerciseDetails, getExerciseById } from "../../services/exercisesService";
 import VNESTExerciseModal from "../exercises/VNESTExerciseModal";
 import SRExerciseModal from "../exercises/SRExerciseModal";
@@ -13,6 +13,7 @@ import "./PacienteDetail.css";
 
 const PacienteDetail = () => {
   const { pacienteId } = useParams();
+  const [patientInfo, setPatientInfo] = useState(null);
   const [exercises, setExercises] = useState([]);
   const [detailedExercises, setDetailedExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -28,6 +29,22 @@ const PacienteDetail = () => {
     if (!pacienteId) return;
     const unsubscribe = getAssignedExercises(pacienteId, setExercises);
     return () => unsubscribe && unsubscribe();
+  }, [pacienteId]);
+
+  //cargar info del paciente
+  useEffect(() => {
+    const loadPatientInfo = async () => {
+      if (!pacienteId) return;
+
+      try {
+        const patientInfo = await getPatientById(pacienteId);
+        setPatientInfo(patientInfo);
+      } catch (error) {
+        console.error("Error cargando información del paciente:", error);
+      }
+    };
+
+    loadPatientInfo();
   }, [pacienteId]);
 
   // 🔍 Cargar detalles de cada ejercicio
@@ -102,7 +119,7 @@ const PacienteDetail = () => {
       <main className="container py-5 mt-5">
         {/* === HEADER === */}
         <div className="paciente-header">
-          <h2>Ejercicios del paciente</h2>
+          <h2>Ejercicios de {patientInfo?.nombre || "Paciente"}</h2>
           <div className="actions">
             <button
               className="btn-secondary"

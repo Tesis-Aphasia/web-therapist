@@ -212,7 +212,7 @@ const VNESTTable = ({ exercises, onEdit, onView }) => {
                   <td>{e.contexto || "—"}</td>
                   <td>{e.verbo || "—"}</td>
                   <td>{e.personalizado ? "Sí" : "No"}</td>
-                  <td>{e.id_paciente || "—"}</td>
+                  <td>{e.pacienteEmail || "—"}</td>
                   <td>
                     {e.revisado ? (
                       <span className="badge bg-success">Revisado</span>
