@@ -7,10 +7,12 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import { getPatientById } from "../../services/patientService";
+import { getTherapistData } from "../../services/therapistService";
 import "./VNESTExerciseModal.css";
 
 const VNESTExerciseModal = ({ exercise, onClose }) => {
   const [patientName, setPatientName] = useState("—");
+  const [therapistName, setTherapistName] = useState("—");
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -27,6 +29,23 @@ const VNESTExerciseModal = ({ exercise, onClose }) => {
 
     fetchPatientData();
   }, [exercise?.id_paciente]);
+
+  // get info therapist from exercise.creado_por
+  useEffect(() => {
+    const fetchTherapistData = async () => {
+      if (!exercise?.creado_por) return;
+      try {
+        const therapist = await getTherapistData(exercise.creado_por);
+        if (therapist) {
+          setTherapistName(therapist.nombre || therapist.email || "Sin nombre");
+        }
+      } catch (err) {
+        console.error("Error obteniendo terapeuta:", err);
+      }
+    };
+    fetchTherapistData();
+  }, [exercise?.creado_por]);
+
 
   return (
     <div className="vnest-modal-backdrop" onClick={onClose}>
@@ -78,7 +97,7 @@ const VNESTExerciseModal = ({ exercise, onClose }) => {
                 <strong>Tipo:</strong> {exercise.tipo}
               </p>
               <p>
-                <strong>Creado por:</strong> {exercise.creado_por || "—"}
+                <strong>Creado por:</strong> {therapistName}
               </p>
               <p>
                 <strong>Paciente:</strong> {patientName}

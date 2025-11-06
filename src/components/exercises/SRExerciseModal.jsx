@@ -1,5 +1,6 @@
 
 import { getPatientById } from "../../services/patientService";
+import { getTherapistData } from "../../services/therapistService";
 import React, { useEffect, useState } from "react";
 import {
   FaQuestionCircle,
@@ -14,6 +15,7 @@ import "./SRExerciseModal.css";
 
 const SRExerciseModal = ({ exercise, onClose }) => {
   const [patientName, setPatientName] = useState("—");
+  const [therapistName, setTherapistName] = useState("—");
 
    useEffect(() => {
     const fetchPatientData = async () => {
@@ -30,6 +32,22 @@ const SRExerciseModal = ({ exercise, onClose }) => {
 
     fetchPatientData();
   }, [exercise?.id_paciente]);
+
+  // get info therapist from exercise.creado_por
+    useEffect(() => {
+      const fetchTherapistData = async () => {
+        if (!exercise?.creado_por) return;
+        try {
+          const therapist = await getTherapistData(exercise.creado_por);
+          if (therapist) {
+            setTherapistName(therapist.nombre || therapist.email || "Sin nombre");
+          }
+        } catch (err) {
+          console.error("Error obteniendo terapeuta:", err);
+        }
+      };
+      fetchTherapistData();
+    }, [exercise?.creado_por]);
 
   const formatTime = (ms) => {
     if (!ms) return "—";
@@ -141,7 +159,7 @@ const SRExerciseModal = ({ exercise, onClose }) => {
                 {exercise.id_ejercicio_general || "—"}
               </p>
               <p>
-                <strong>Creado por:</strong> {exercise.creado_por || "—"}
+                <strong>Creado por:</strong> {therapistName}
               </p>
               <p>
                 <strong>Paciente:</strong> {patientName}

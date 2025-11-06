@@ -7,7 +7,7 @@ import "./AddExerciseIA.css";
 const AddExerciseIA = () => {
   const [context, setContext] = useState("");
   const [nivel, setNivel] = useState("fácil");
-  const [visibilidad, setVisibilidad] = useState("privado");
+  const [visibilidad, setVisibilidad] = useState("público");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [allContexts, setAllContexts] = useState([]);
@@ -37,7 +37,7 @@ const AddExerciseIA = () => {
       const data = await generateExercise({
         context,
         nivel,
-        creado_por: localStorage.getItem("terapeutaEmail") || "desconocido",
+        creado_por: localStorage.getItem("terapeutaUID") || "desconocido",
         tipo: visibilidad,
       });
       setResult(data);
