@@ -140,27 +140,41 @@ h1 { color: var(--primary-dark); letter-spacing: -0.5px; }
 
 /* === LOGIN 2 COLUMNAS === */
 .login-card-2col {
-  max-width: 900px !important;
+  min-height: 40vh;
+  max-width: 1000px !important;
   padding: 2.5rem;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
+  align-items: center;
 }
 
-.login-col-left,
 .login-col-right {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
 }
+
+.login-col-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;   /* ← AÑADE ESTO */
+  text-align: center;
+}
+
 
 /* === REGISTRO 2 COLUMNAS === */
 .registro-card-2col {
+  min-height: 70vh;
   max-width: 70% !important;
   margin: 6rem auto;
   display: flex;
   gap: 2rem;
   padding: 2.5rem;
+  align-items: center;
 }
 
 .registro-col-left,
@@ -206,13 +220,15 @@ h1 { color: var(--primary-dark); letter-spacing: -0.5px; }
 }
 
 .left-uniandes {
-  margin-top: auto;
-  text-align: left;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;   /* ← AÑADE ESTO */
+  text-align: center;
+  gap: 1rem;
 }
 
 .left-uniandes img {
-  width: 150px;
-  margin-bottom: 0.2rem;
+  width: 60%;
 }
 
 .uniandes-caption {
