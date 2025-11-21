@@ -1,0 +1,28 @@
+.footer-container {
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb; /* gris suave */
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.footer-text {
+  font-size: 0.85rem;
+  color: #6b7280; /* gray-500 */
+  margin: 2px 0;
+  text-align: center;
+  max-width: 95%;
+  line-height: 1.3rem;
+}
+
+.footer-link {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}

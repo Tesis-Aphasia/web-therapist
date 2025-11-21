@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sendTherapistRequest } from "../../services/therapistService";
-import "./TerapeutaLogin.css"; // usamos los mismos estilos
+import Footer from "../common/Footer";
+import "./TerapeutaLogin.css";
 
 const TerapeutaRegistro = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const TerapeutaRegistro = () => {
     email: "",
     celular: "",
     profesion: "",
-    motivacion: "", // 🔹 nuevo campo
+    motivacion: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -37,159 +38,159 @@ const TerapeutaRegistro = () => {
         motivacion: "",
       });
     } catch (err) {
-      console.error("Error al enviar solicitud:", err);
-      setError("No se pudo enviar la solicitud. Intenta nuevamente.");
+      setError("No se pudo enviar la solicitud. Intenta nuevamente.", err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="gradient-bg" />
-      <div className="registro-card">
-        <div className="text-center mb-4">
-          <h1 className="fw-bold text-dark fs-3 mb-1">Registro de Terapeuta</h1>
-          <p className="text-muted small">
-            Envía tu solicitud para ser parte de <strong>Rehabilitia</strong>
-          </p>
-        </div>
+    <>
+      <div className="login-container">
+        <div className="gradient-bg" />
 
-        {success ? (
-          <div className="alert alert-success text-center">
-            ✅ Tu solicitud ha sido enviada. Un administrador la revisará pronto.
-            <div className="mt-3">
-              <button
-                className="btn-login"
-                onClick={() => navigate("/terapeuta/login")}
-              >
-                Volver al inicio de sesión
-              </button>
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="nombre" className="form-label fw-semibold small">
-                Nombre completo
-              </label>
-              <input
-                id="nombre"
-                name="nombre"
-                type="text"
-                className="form-control rounded-3"
-                placeholder="Tu nombre completo"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-              />
-            </div>
+        {/* CARD MÁS PEQUEÑA Y EN 2 COLUMNAS */}
+        <div className="registro-card registro-card-2col fade-in">
 
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label fw-semibold small">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className="form-control rounded-3"
-                placeholder="example@email.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          {/* ===========================
+              COLUMNA IZQUIERDA
+          ============================ */}
+          <div className="login-col-left">
 
-            <div className="mb-3">
-              <label htmlFor="celular" className="form-label fw-semibold small">
-                Celular
-              </label>
-              <input
-                id="celular"
-                name="celular"
-                type="text"
-                className="form-control rounded-3"
-                placeholder="3212345678"
-                value={formData.celular}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            {/* Logo RehabilitIA */}
+            <img
+              src="src/assets/brain_logo.png"
+              alt="RehabilitIA"
+              className="left-logo-rehab"
+            />
 
-            <div className="mb-3">
-              <label
-                htmlFor="profesion"
-                className="form-label fw-semibold small"
-              >
-                Profesión
-              </label>
-              <input
-                id="profesion"
-                name="profesion"
-                type="text"
-                className="form-control rounded-3"
-                placeholder="Ej: Fonoaudiólogo"
-                value={formData.profesion}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <h2 className="left-title">Rehabilit<span className="logo-accent">IA</span></h2>
 
-            {/* 🔹 Nuevo campo de motivación */}
-            <div className="mb-3">
-              <label
-                htmlFor="motivacion"
-                className="form-label fw-semibold small"
-              >
-                ¿Por qué quieres ser parte de esta comunidad?
-              </label>
-              <textarea
-                id="motivacion"
-                name="motivacion"
-                className="form-control rounded-3"
-                placeholder="Cuéntanos brevemente tu motivación o experiencia."
-                value={formData.motivacion}
-                onChange={handleChange}
-                rows={4}
-                required
-              />
-            </div>
-
-            {error && <div className="alert alert-error">{error}</div>}
-
-            <button type="submit" className="btn-login" disabled={loading}>
-              {loading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2"></span>
-                  Enviando solicitud...
-                </>
-              ) : (
-                "Enviar solicitud"
-              )}
-            </button>
-
-            {/* 🔹 Mensaje aclaratorio */}
-            <p className="text-muted small text-center mt-3">
-              Podremos contactarte para verificar tu información o solicitar más
-              detalles sobre tu experiencia profesional.
+            <p className="left-subtitle">
+              Plataforma para apoyo terapéutico inteligente en afasia.
             </p>
 
-            <div className="text-center mt-3">
-              <p className="small text-muted">
-                ¿Ya tienes una cuenta?{" "}
-                <a
-                  href="/terapeuta/login"
-                  className="forgot-link small fw-semibold"
-                >
-                  Inicia sesión
-                </a>
-              </p>
+            {/* Logo Uniandes */}
+            <div className="left-uniandes">
+              <img src="src/assets/logo_disc.png" alt="Uniandes" />
+
             </div>
-          </form>
-        )}
+          </div>
+
+          {/* ===========================
+              COLUMNA DERECHA (FORM)
+          ============================ */}
+          <div className="registro-col-right">
+            <h1 className="fw-bold text-dark fs-3 mb-1 text-center">
+              Registro de Terapeuta
+            </h1>
+
+            <p className="text-muted small text-center mb-4">
+              Envía tu solicitud para unirte a <strong>RehabilitIA</strong>
+            </p>
+
+            {success ? (
+              <div className="alert alert-success text-center">
+                Tu solicitud ha sido enviada.
+                <div className="mt-3">
+                  <button
+                    className="btn-login"
+                    onClick={() => navigate("/terapeuta/login")}
+                  >
+                    Volver al inicio de sesión
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="registro-form">
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold small">Nombre completo</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    className="form-control rounded-3"
+                    placeholder="Tu nombre completo"
+                    value={formData.nombre}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold small">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="form-control rounded-3"
+                    placeholder="correo@ejemplo.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold small">Celular</label>
+                  <input
+                    type="text"
+                    name="celular"
+                    className="form-control rounded-3"
+                    placeholder="3212345678"
+                    value={formData.celular}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold small">Profesión</label>
+                  <input
+                    type="text"
+                    name="profesion"
+                    className="form-control rounded-3"
+                    placeholder="Ej: Fonoaudiólogo"
+                    value={formData.profesion}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold small">
+                    ¿Por qué quieres ser parte?
+                  </label>
+                  <textarea
+                    name="motivacion"
+                    className="form-control rounded-3"
+                    placeholder="Cuéntanos brevemente tu motivación."
+                    rows={3}
+                    value={formData.motivacion}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                {error && <div className="alert alert-error">{error}</div>}
+
+                <button type="submit" className="btn-login" disabled={loading}>
+                  {loading ? "Enviando..." : "Enviar solicitud"}
+                </button>
+
+                <p className="small text-muted text-center mt-3">
+                  ¿Ya tienes una cuenta?{" "}
+                  <a href="/terapeuta/login" className="forgot-link fw-semibold">
+                    Inicia sesión
+                  </a>
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
 };
 

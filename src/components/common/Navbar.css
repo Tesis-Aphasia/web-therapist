@@ -53,6 +53,7 @@
 
 .logo-accent {
   background: var(--gradient-accent);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -151,4 +152,28 @@
     font-size: 0.85rem;
     padding: 0.3rem 0.7rem;
   }
+}
+
+/* === LOGOS EN EL NAVBAR === */
+.navbar-logos {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.logo-rehab {
+  height: 34px;
+  object-fit: contain;
+}
+
+.logo-uniandes {
+  height: 34px;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 0.25s ease;
+}
+
+.logo-uniandes:hover {
+  opacity: 1;
 }

@@ -27,12 +27,20 @@ const Navbar = ({ active }) => {
   return (
     <nav className={`navbar-modern fixed-top ${scrolled ? "scrolled" : ""}`}>
       <div className="navbar-inner container-fluid px-4">
-        {/* LOGO */}
-        <div
-          className="navbar-logo"
-          onClick={() => navigate("/dashboard")}
-        >
-          <span className="logo-accent">Rehabi</span>litia
+
+        {/* LOGOS */}
+        <div className="navbar-logos" onClick={() => navigate("/dashboard")}>
+          <img
+            src="src/assets/brain_logo.png"
+            className="logo-rehab"
+            alt="RehabilitIA"
+          />
+          <div className="navbar-logo" onClick={() => navigate("/dashboard")} > Rehabilit<span className="logo-accent">IA</span> </div>
+          {/* <img
+            src="src/assets/logo_disc.png"
+            className="logo-uniandes"
+            alt="Uniandes"
+          /> */}
         </div>
 
         {/* MENÚ */}
@@ -49,7 +57,7 @@ const Navbar = ({ active }) => {
           ))}
         </ul>
 
-        {/* PERFIL Y LOGOUT */}
+        {/* PERFIL Y SALIR */}
         <div className="navbar-actions d-flex align-items-center gap-3">
           <span className="user-email d-none d-md-inline">{email}</span>
           <button className="btn-logout" onClick={handleLogout}>

@@ -1,7 +1,6 @@
 :root {
   --primary: #ef7e06;
   --primary-dark: #c96a05;
-  --bg-light: #fff;
   --muted: #6b6b6b;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
@@ -17,11 +16,11 @@
   overflow: hidden;
 }
 
-/* === FONDO CON FADE NARANJA === */
+/* === FONDO === */
 .gradient-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #fff 30%, #fff7ef 50%, rgba(239, 126, 6, 0.2) 80%);
+  background: linear-gradient(180deg, #fff 10%, #fff7ef 40%, rgba(255, 132, 0, 0.2) 80%);
   animation: gradientFlow 6s ease-in-out infinite alternate;
   z-index: 0;
 }
@@ -31,20 +30,8 @@
   100% { background-position: 100% 50%; }
 }
 
-/* === TARJETA DE LOGIN === */
-.login-card {
-  position: relative;
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(10px);
-  border-radius: 1.2rem;
-  padding: 3rem 2.5rem;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: var(--shadow);
-  animation: slideUp 0.6s ease;
-}
-
+/* === CARDS === */
+.login-card,
 .registro-card {
   position: relative;
   z-index: 2;
@@ -53,10 +40,12 @@
   border-radius: 1.2rem;
   padding: 3rem 2.5rem;
   width: 100%;
-  max-width: 75%;
   box-shadow: var(--shadow);
   animation: slideUp 0.6s ease;
 }
+
+.login-card { max-width: 400px; }
+.registro-card { max-width: 75%; margin-bottom: 2rem; }
 
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
@@ -64,20 +53,10 @@
 }
 
 /* === TEXTOS === */
-h1 {
-  color: var(--primary-dark);
-  letter-spacing: -0.5px;
-}
+h1 { color: var(--primary-dark); letter-spacing: -0.5px; }
+.text-muted { color: var(--muted); }
 
-.text-muted {
-  color: var(--muted);
-}
-
-/* === FORMULARIO === */
-.form-label {
-  color: #444;
-}
-
+/* === FORM === */
 .form-control {
   width: 100%;
   border: 1.8px solid rgba(0, 0, 0, 0.1);
@@ -85,7 +64,7 @@ h1 {
   padding: 0.8rem 1rem;
   font-size: 0.95rem;
   border-radius: 0.5rem;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 
 .form-control:focus {
@@ -94,7 +73,7 @@ h1 {
   outline: none;
 }
 
-/* === BOTÓN LOGIN === */
+/* === BOTÓN === */
 .btn-login {
   background: var(--primary);
   color: #fff;
@@ -103,7 +82,7 @@ h1 {
   padding: 0.8rem 1rem;
   font-weight: 700;
   border-radius: 0.5rem;
-  transition: all 0.3s ease;
+  transition: 0.3s;
   cursor: pointer;
 }
 
@@ -113,12 +92,7 @@ h1 {
   box-shadow: 0 6px 12px rgba(239, 126, 6, 0.25);
 }
 
-.btn-login:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
-}
-
-/* === ALERTA DE ERROR === */
+/* === ALERTAS === */
 .alert-error {
   background: #ffe8e8;
   color: #b00000;
@@ -130,50 +104,23 @@ h1 {
   margin-bottom: 1rem;
 }
 
-/* === LINK DE RECUPERAR CONTRASEÑA === */
+/* === LINKS DE ACCIÓN === */
 .forgot-link {
   color: var(--primary);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.forgot-link:hover {
-  color: var(--primary-dark);
-  text-decoration: underline;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 576px) {
-  .login-card {
-    padding: 2rem;
-    margin: 1rem;
-  }
-}
-
-.alert-success button {
-  margin-top: 1rem;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  border: none !important;
+  background: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
   cursor: pointer;
 }
 
-.alert-success button:hover {
-  background: var(--primary-dark);
-}
-
-/* === Modal de restablecimiento === */
+/* === MODAL RESET === */
 .reset-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0,0,0,0.45);
   display: flex;
   justify-content: center;
@@ -191,38 +138,84 @@ h1 {
   text-align: center;
 }
 
-.reset-modal h3 {
-  color: var(--primary-dark);
-  margin-bottom: 0.5rem;
+/* === LOGIN 2 COLUMNAS === */
+.login-card-2col {
+  max-width: 900px !important;
+  padding: 2.5rem;
+  display: flex;
+  gap: 2rem;
 }
 
-.reset-modal input {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border-radius: 0.5rem;
-  border: 1.5px solid rgba(0,0,0,0.1);
-  margin-top: 0.6rem;
-  font-size: 0.95rem;
+.login-col-left,
+.login-col-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.reset-modal input:focus {
-  border-color: var(--primary);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(239,126,6,0.15);
+/* === REGISTRO 2 COLUMNAS === */
+.registro-card-2col {
+  max-width: 70% !important;
+  margin: 6rem auto;
+  display: flex;
+  gap: 2rem;
+  padding: 2.5rem;
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  color: #555;
-  margin-top: 1rem;
-  cursor: pointer;
+.registro-col-left,
+.registro-col-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* === FORM COMPACTO === */
+.registro-form input,
+.registro-form textarea {
   font-size: 0.9rem;
-  transition: color 0.2s;
+  padding: 0.7rem 1rem;
 }
 
-.close-btn:hover {
-  color: var(--primary-dark);
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .login-card-2col,
+  .registro-card-2col {
+    flex-direction: column;
+    max-width: 95% !important;
+  }
+}
+/* IZQUIERDA */
+.left-logo-rehab {
+  width: 150px;
+  margin-bottom: 1.5rem;
 }
 
+.left-title {
+  font-size: 1.9rem;
+  font-weight: 700;
 
+}
+
+.left-subtitle {
+  font-size: 0.95rem;
+  color: #444;
+  margin-bottom: 2rem;
+  max-width: 250px;
+}
+
+.left-uniandes {
+  margin-top: auto;
+  text-align: left;
+}
+
+.left-uniandes img {
+  width: 150px;
+  margin-bottom: 0.2rem;
+}
+
+.uniandes-caption {
+  font-size: 0.8rem;
+  color: #444;
+}
