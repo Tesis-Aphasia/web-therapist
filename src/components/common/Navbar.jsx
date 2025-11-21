@@ -31,16 +31,16 @@ const Navbar = ({ active }) => {
         {/* LOGOS */}
         <div className="navbar-logos" onClick={() => navigate("/dashboard")}>
           <img
-            src="src/assets/brain_logo.png"
+            src="https://raw.githubusercontent.com/Tesis-Aphasia/Web-App-RehabilitIA/refs/heads/main/src/assets/brain_logo.png"
             className="logo-rehab"
             alt="RehabilitIA"
           />
           <div className="navbar-logo" onClick={() => navigate("/dashboard")} > Rehabilit<span className="logo-accent">IA</span> </div>
-          {/* <img
-            src="src/assets/logo_disc.png"
+          <img
+            src="https://raw.githubusercontent.com/Tesis-Aphasia/Web-App-RehabilitIA/refs/heads/main/src/assets/logo_disc.png"
             className="logo-uniandes"
             alt="Uniandes"
-          /> */}
+          />
         </div>
 
         {/* MENÚ */}
