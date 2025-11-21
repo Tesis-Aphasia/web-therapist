@@ -7,7 +7,7 @@ import "./AddExerciseIA.css";
 const AddExerciseIA = () => {
   const [context, setContext] = useState("");
   const [nivel, setNivel] = useState("fácil");
-  const [visibilidad, setVisibilidad] = useState("público");
+  const [visibilidad, setVisibilidad] = useState("publico");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [allContexts, setAllContexts] = useState([]);
