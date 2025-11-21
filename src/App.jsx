@@ -11,7 +11,7 @@ import PacienteDetail from "./components/patients/PacienteDetail";
 import TerapeutaRegistro from "./components/login/TerapeutaRegistro";
 
 // 🔹 nuevos componentes del admin
-import AdminLogin from "./components/admin/AdminLogin";
+
 import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
@@ -28,7 +28,6 @@ function App() {
       <Route path="/ejercicios/nuevo/ia" element={<AddExerciseIA />} />
 
       {/* === ADMIN === */}
-      <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
       {/* === DEFAULT === */}

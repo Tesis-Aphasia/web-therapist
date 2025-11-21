@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginTherapist, resetTherapistPassword } from "../../services/therapistService";
+import {
+  loginUnified,
+  resetTherapistPassword,
+} from "../../services/therapistService";
 import "./TerapeutaLogin.css";
 
 const TerapeutaLogin = () => {
@@ -19,17 +22,24 @@ const TerapeutaLogin = () => {
     setLoading(true);
 
     try {
-      const result = await loginTherapist(email, password);
-      if (!result.success) {
-        setError("Credenciales incorrectas. Verifica tu email o contraseña.");
-        setLoading(false);
+      const result = await loginUnified(email, password);
+
+      if (result.tipo === "admin") {
+        navigate("/admin/dashboard");
         return;
       }
 
-      localStorage.setItem("terapeutaEmail", email);
-      localStorage.setItem("terapeutaUID", result.user.uid);
-      if (result.data) localStorage.setItem("terapeutaData", JSON.stringify(result.data));
-      navigate("/dashboard");
+      if (result.tipo === "terapeuta") {
+        localStorage.setItem("terapeutaEmail", email);
+        localStorage.setItem("terapeutaUID", result.user.uid);
+        if (result.data)
+          localStorage.setItem("terapeutaData", JSON.stringify(result.data));
+
+        navigate("/dashboard");
+        return;
+      }
+
+      setError("Tus credenciales son incorrectas. Revísalas e intenta nuevamente.");
     } catch (err) {
       console.error("Error en login:", err);
       setError("Error al iniciar sesión. Intenta nuevamente.");
@@ -43,9 +53,13 @@ const TerapeutaLogin = () => {
     setResetMessage("");
     const res = await resetTherapistPassword(resetEmail);
     if (res.success) {
-      setResetMessage("✅ Te hemos enviado un correo para restablecer tu contraseña.");
+      setResetMessage(
+        "✅ Te hemos enviado un correo para restablecer tu contraseña."
+      );
     } else {
-      setResetMessage("⚠️ No se pudo enviar el correo. Verifica el email o intenta más tarde.");
+      setResetMessage(
+        "⚠️ No se pudo enviar el correo. Verifica el email o intenta más tarde."
+      );
     }
   };
 
@@ -98,7 +112,12 @@ const TerapeutaLogin = () => {
               type="button"
               className="forgot-link small"
               onClick={() => setShowReset(true)}
-              style={{ background: "none", border: "none", color: "#ef7e06", cursor: "pointer" }}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#ef7e06",
+                cursor: "pointer",
+              }}
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -142,7 +161,8 @@ const TerapeutaLogin = () => {
           <div className="reset-modal fade-in">
             <h3>Restablecer contraseña</h3>
             <p className="small text-muted">
-              Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.
+              Ingresa tu correo y te enviaremos un enlace para crear una nueva
+              contraseña.
             </p>
             <form onSubmit={handlePasswordReset}>
               <input
@@ -152,13 +172,12 @@ const TerapeutaLogin = () => {
                 onChange={(e) => setResetEmail(e.target.value)}
                 required
               />
-              <button type="submit" className="btn-login mt-2">Enviar correo</button>
+              <button type="submit" className="btn-login mt-2">
+                Enviar correo
+              </button>
             </form>
             {resetMessage && <p className="small mt-2">{resetMessage}</p>}
-            <button
-              className="close-btn"
-              onClick={() => setShowReset(false)}
-            >
+            <button className="close-btn" onClick={() => setShowReset(false)}>
               Cerrar
             </button>
           </div>
